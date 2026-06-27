@@ -1,0 +1,88 @@
+import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
+import { json } from "@remix-run/node";
+import { Link, useLoaderData } from "@remix-run/react";
+import { getWebSection } from "~/lib/content.server";
+import CarouselCircular from "~/components/ui/CarouselCircular";
+
+export const meta: MetaFunction<typeof loader> = ({ data }) => {
+  const attrs = data?.homeSection?.attrs ?? {};
+  return [
+    { title: (attrs["seo_title"] as string) ?? "Frederic Martínez" },
+    { name: "description", content: (attrs["seo_description"] as string) ?? "" },
+  ];
+};
+
+export async function loader(_args: LoaderFunctionArgs) {
+  const homeSection = await getWebSection("home");
+  return json({ homeSection });
+}
+
+export default function IndexRoute() {
+  const { homeSection } = useLoaderData<typeof loader>();
+  const attrs = homeSection?.attrs ?? {};
+
+  const titleLine1 = (attrs["hero_title_line1"] as string) ?? "";
+  const titleLine2 = (attrs["hero_title_line2"] as string) ?? "";
+  const subtitle = (attrs["hero_subtitle"] as string) ?? "";
+  const carouselItems = (attrs["carousel_items"] as string[]) ?? [];
+  const count = carouselItems.length || 1;
+  const angleStep = 360 / count;
+  const radius = 370;
+
+  return (
+    <main>
+      <section className="home-hero">
+        {/* Upper content: title + subtitle + CTAs */}
+        <div className="home-hero-upper">
+          <h1 className="home-hero-title">
+            {titleLine1}
+            {titleLine2 && (
+              <>
+                <br />
+                <span className="home-hero-title-dim">{titleLine2}</span>
+              </>
+            )}
+          </h1>
+
+          {subtitle && <p className="home-hero-subtitle">{subtitle}</p>}
+
+          <div className="home-hero-ctas">
+            <Link to="/sobre-mi" className="btn btn-outline-white">
+              CONÓCEME MEJOR
+            </Link>
+
+            <Link to="/proyectos" className="btn-arrow-anim">
+              VER PROYECTOS
+              <span className="btn-arrow-anim-circle">
+                <i className="btn-arrow-anim-icon">&#8599;</i>
+                <i className="btn-arrow-anim-icon">&#8599;</i>
+              </span>
+            </Link>
+          </div>
+        </div>
+
+        {/* 3D circular carousel */}
+        {carouselItems.length > 0 && (
+          <div className="home-carousel-scene">
+            <div className="home-carousel-track">
+              {carouselItems.map((item, i) => (
+                <div
+                  key={item}
+                  className="home-card-3d"
+                  style={{
+                    transform: `rotateY(${i * angleStep}deg) translateZ(${radius}px)`,
+                  }}
+                >
+                  <div className="home-card-3d-image" />
+                  <p className="home-card-3d-label">{item}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </section>
+    </main>
+  );
+}
+
+
