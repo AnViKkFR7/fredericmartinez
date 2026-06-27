@@ -3,6 +3,7 @@ import { json } from "@remix-run/node";
 import { Link, useLoaderData } from "@remix-run/react";
 import { getWebSection } from "~/lib/content.server";
 import CarouselCircular from "~/components/ui/CarouselCircular";
+import ButtonSlider from "~/components/ui/ButtonSlider";
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
   const attrs = data?.homeSection?.attrs ?? {};
@@ -51,13 +52,7 @@ export default function IndexRoute() {
               CONÓCEME MEJOR
             </Link>
 
-            <Link to="/proyectos" className="btn-arrow-anim">
-              VER PROYECTOS
-              <span className="btn-arrow-anim-circle">
-                <i className="btn-arrow-anim-icon">&#8599;</i>
-                <i className="btn-arrow-anim-icon">&#8599;</i>
-              </span>
-            </Link>
+            <ButtonSlider to="/proyectos" text="VER PROYECTOS" />
           </div>
         </div>
 

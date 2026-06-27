@@ -4,6 +4,7 @@ import { useLoaderData } from "@remix-run/react";
 import { getWebSection } from "~/lib/content.server";
 import TrayectoriaCarousel from "~/components/ui/TrayectoriaCarousel";
 import type { TrayectoriaSlide } from "~/components/ui/TrayectoriaCarousel";
+import ButtonSlider from "~/components/ui/ButtonSlider";
 
 // TODO: reemplazar con items de tipo 'trayectoria' en Supabase cuando se añadan al schema
 const TRAYECTORIA_SLIDES: TrayectoriaSlide[] = [
@@ -88,13 +89,7 @@ export default function SobreMiRoute() {
             <h1 className="about-split-title">{heroTitle}</h1>
             <p className="about-split-desc">{heroDesc}</p>
 
-            <a href="#trayectoria" className="btn-arrow-anim" style={{ alignSelf: "center" }}>
-              CONÓCEME EN 60 SEGUNDOS
-              <span className="btn-arrow-anim-circle">
-                <i className="btn-arrow-anim-icon">&#8599;</i>
-                <i className="btn-arrow-anim-icon">&#8599;</i>
-              </span>
-            </a>
+            <ButtonSlider to="/proyectos" text="CONÓCEME EN 60 SEGUNDOS" />
 
             {heroBadge && (
               <div className="about-split-badge-row">
