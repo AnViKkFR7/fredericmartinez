@@ -5,6 +5,7 @@ import { getWebSection } from "~/lib/content.server";
 import TrayectoriaCarousel from "~/components/ui/TrayectoriaCarousel";
 import type { TrayectoriaSlide } from "~/components/ui/TrayectoriaCarousel";
 import ButtonSlider from "~/components/ui/ButtonSlider";
+import "~/styles/SobreMi.css";
 
 // TODO: reemplazar con items de tipo 'trayectoria' en Supabase cuando se añadan al schema
 const TRAYECTORIA_SLIDES: TrayectoriaSlide[] = [
@@ -81,7 +82,7 @@ export default function SobreMiRoute() {
         <div className="about-split-grid">
           {/* Card izquierda: imagen */}
           <div className="about-split-image">
-            {/* TODO: reemplazar por imagen real */}
+             <img src="/app/images/sobre_mi1.png" alt="Frederic Martínez" />
           </div>
 
           {/* Card derecha: texto + CTA */}

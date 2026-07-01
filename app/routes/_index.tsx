@@ -4,6 +4,7 @@ import { Link, useLoaderData } from "@remix-run/react";
 import { getWebSection } from "~/lib/content.server";
 import CarouselCircular from "~/components/ui/CarouselCircular";
 import ButtonSlider from "~/components/ui/ButtonSlider";
+import CarouselHome from "~/components/ui/CarouselHome";
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
   const attrs = data?.homeSection?.attrs ?? {};
@@ -56,7 +57,7 @@ export default function IndexRoute() {
           </div>
         </div>
 
-        {/* 3D circular carousel */}
+        {/* 3D circular carousel 
         {carouselItems.length > 0 && (
           <div className="home-carousel-scene">
             <div className="home-carousel-track">
@@ -74,7 +75,9 @@ export default function IndexRoute() {
               ))}
             </div>
           </div>
-        )}
+        )}*/}
+        <CarouselHome items={carouselItems} radius={radius} angleStep={angleStep} />
+        
       </section>
     </main>
   );
