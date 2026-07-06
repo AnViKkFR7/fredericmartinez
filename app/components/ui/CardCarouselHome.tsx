@@ -8,7 +8,7 @@ interface CardCarouselHomeProps {
 
 export default function CardCarouselHome({
     text = "DISPONIBLE · DISPONIBLE · DISPONIBLE ·",
-    imageSrc = "app/images/servicios1.png",
+    imageSrc = "/images/servicios1.png",
 }: CardCarouselHomeProps) {
 
     return (

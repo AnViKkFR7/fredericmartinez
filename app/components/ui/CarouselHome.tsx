@@ -25,18 +25,18 @@ export default function CarouselHome({
                     <div className="radial-marquee__collection">
                         <div data-radial-marquee-rotate className="radial-marquee__list" data-radial-marquee>
                             {/* Repite este bloque por cada card (8 en este ejemplo) */}
-                            <CardCarouselHome text="Storytelling" imageSrc="app/images/home2.png" />
-                            <CardCarouselHome text="Podcasting" imageSrc="app/images/home3.png" />
-                            <CardCarouselHome text="Creador de contenido" imageSrc="app/images/home1.png" />
-                            <CardCarouselHome text="Storytelling" imageSrc="app/images/home2.png" />
-                            <CardCarouselHome text="Podcasting" imageSrc="app/images/home3.png" />
-                            <CardCarouselHome text="Creador de contenido" imageSrc="app/images/home1.png" />
-                            <CardCarouselHome text="Storytelling" imageSrc="app/images/home2.png" />
-                            <CardCarouselHome text="Podcasting" imageSrc="app/images/home3.png" />
-                            <CardCarouselHome text="Creador de contenido" imageSrc="app/images/home1.png" />
-                            <CardCarouselHome text="Storytelling" imageSrc="app/images/home2.png" />
-                            <CardCarouselHome text="Podcasting" imageSrc="app/images/home3.png" />
-                            <CardCarouselHome text="Creador de contenido" imageSrc="app/images/home1.png" />
+                            <CardCarouselHome text="Storytelling" imageSrc="/images/home2.png" />
+                            <CardCarouselHome text="Podcasting" imageSrc="/images/home3.png" />
+                            <CardCarouselHome text="Creador de contenido" imageSrc="/images/home1.png" />
+                            <CardCarouselHome text="Storytelling" imageSrc="/images/home2.png" />
+                            <CardCarouselHome text="Podcasting" imageSrc="/images/home3.png" />
+                            <CardCarouselHome text="Creador de contenido" imageSrc="/images/home1.png" />
+                            <CardCarouselHome text="Storytelling" imageSrc="/images/home2.png" />
+                            <CardCarouselHome text="Podcasting" imageSrc="/images/home3.png" />
+                            <CardCarouselHome text="Creador de contenido" imageSrc="/images/home1.png" />
+                            <CardCarouselHome text="Storytelling" imageSrc="/images/home2.png" />
+                            <CardCarouselHome text="Podcasting" imageSrc="/images/home3.png" />
+                            <CardCarouselHome text="Creador de contenido" imageSrc="/images/home1.png" />
                         </div>
                     </div>
                 </div>
