@@ -83,7 +83,7 @@ export default function SobreMiRoute() {
         <div className="about-split-grid">
           {/* Card izquierda: imagen */}
           <div className="about-split-image">
-            <img src="/app/images/sobre_mi1.png" alt="Frederic Martínez" />
+            <img src="/images/sobre_mi1.png" alt="Frederic Martínez" />
           </div>
 
           {/* Card derecha: texto + CTA */}
