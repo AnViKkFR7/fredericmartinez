@@ -126,8 +126,8 @@
    TRAYECTORIA SECTION
    ============================================================ */
 .trayectoria-section {
-  padding-top: 96px;
-  min-height: calc(100vh - var(--nav-height));
+    padding-top: 96px;
+    min-height: calc(100vh - var(--nav-height));
 }
 
 .trayectoria-header {
@@ -178,11 +178,10 @@
     position: absolute;
     bottom: 56px;
     left: 50%;
-    transform: translateX(-50%);
-    width: min(1800px, 100%); /* CAMBIADO: 100vw → 100%, relativo al wrap ya no al viewport */
+    transform: translateX(-50%) translateY(2rem);
+    width: min(1800px, 100%);
     pointer-events: none;
     z-index: 0;
-    height: 500px;
 }
 
 .traj-arc-svg {
@@ -235,6 +234,7 @@
     flex-direction: column;
     align-items: center;
     gap: 4px;
+    text-align: center;
 }
 
 .traj-card-category {
@@ -301,20 +301,73 @@
 }
 
 /* Responsive */
-@media (max-width: 768px) {
+@media (max-width: 1268px) {
     .traj-carousel-stage {
         overflow: hidden;
         height: 300px;
     }
+
+    .about-split-title {
+        margin-bottom: 20px;
+    }
+
+    .about-split-desc {
+        margin-bottom: 40px;
+    }
+
+    .about-split-badge-row {
+        margin-top: 40px;
+    }
+
+    .about-split-content {
+        height: fit-content;
+    }
     .traj-card {
-        width: clamp(240px, 78vw, 320px);
+        width: 250px; /* NUEVO: cards bastante más grandes */
+        border-radius: 14px;
+        padding: 20px 20px 28px;
+        gap: 1.5rem;
+    }
+
+    .traj-card-years {
+        font-size: clamp(2.5rem, 5vw, 2.25rem);
+    }
+
+    .traj-card-title {
+        font-size: 0.7375rem;
+    }
+
+    .traj-card-institution {
+        font-size: 0.7375rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .traj-card {
+        width: 200px; /* NUEVO: cards bastante más grandes */
+        border-radius: 14px;
+        padding: 20px 20px 28px;
+        gap: 1.5rem;
+    }
+
+    .traj-card-years {
+        font-size: 1.75rem;
+    }
+
+    .traj-card-title {
+        font-size: 0.6375rem;
+        justify-content: center;
+    }
+
+    .traj-card-institution {
+        font-size: 0.6375rem;
     }
 }
 
 /* ============================================================
    RESPONSIVE — ABOUT
    ============================================================ */
-@media (max-width: 768px) {
+@media (max-width: 1268px) {
     .about-split {
         padding: calc(var(--nav-height) + 8px) 8px 8px;
     }
@@ -333,16 +386,12 @@
         padding-left: 24px;
         padding-right: 24px;
     }
-
-    .traj-card {
-        width: clamp(260px, 80vw, 340px);
-    }
 }
 
 /* ============================================================
    RESPONSIVE — carrusel
    ============================================================ */
-@media (max-width: 768px) {
+@media (max-width: 1268px) {
     .traj-carousel-wrap {
         width: 100%; /* CAMBIADO: en móvil ocupa todo el ancho disponible */
     }

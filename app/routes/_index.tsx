@@ -5,6 +5,7 @@ import { getWebSection } from "~/lib/content.server";
 import CarouselCircular from "~/components/ui/CarouselCircular";
 import ButtonSlider from "~/components/ui/ButtonSlider";
 import CarouselHome from "~/components/ui/CarouselHome";
+import ScrollIndicator from "~/components/ui/ScrollIndicator";
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
   const attrs = data?.homeSection?.attrs ?? {};
@@ -56,28 +57,9 @@ export default function IndexRoute() {
             <ButtonSlider to="/proyectos" text="VER PROYECTOS" />
           </div>
         </div>
-
-        {/* 3D circular carousel 
-        {carouselItems.length > 0 && (
-          <div className="home-carousel-scene">
-            <div className="home-carousel-track">
-              {carouselItems.map((item, i) => (
-                <div
-                  key={item}
-                  className="home-card-3d"
-                  style={{
-                    transform: `rotateY(${i * angleStep}deg) translateZ(${radius}px)`,
-                  }}
-                >
-                  <div className="home-card-3d-image" />
-                  <p className="home-card-3d-label">{item}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}*/}
+        <ScrollIndicator />
         <CarouselHome items={carouselItems} radius={radius} angleStep={angleStep} />
-        
+
       </section>
     </main>
   );

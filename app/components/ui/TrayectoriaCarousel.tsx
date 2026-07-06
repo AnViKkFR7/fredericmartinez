@@ -106,7 +106,7 @@ function circumcenter(
 const ARC_CENTER = circumcenter(pointOnArc(0), pointOnArc(0.5), pointOnArc(1));
 
 const ARC_TICKS = 100;
-const TICK_LENGTH = 4;
+const TICK_LENGTH = 10;
 
 const ARC_TICK_POINTS = Array.from({ length: ARC_TICKS }, (_, i) => {
   const t = 0.04 + (i / (ARC_TICKS - 1)) * 0.92;
