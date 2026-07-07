@@ -1,0 +1,196 @@
+/* ============================================================
+   CONTACT MODAL
+   ============================================================ */
+@keyframes contact-modal-in {
+    from {
+        opacity: 0;
+        transform: translateY(20px) scale(0.97);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+.contact-form-note {
+    font-size: 0.8rem;
+    color: var(--text-color);
+    margin-top: 1rem;
+    text-align: center;
+    letter-spacing: var(--tracking-mono);
+}
+
+.contact-form-note a {
+    color: var(--text-color);
+    text-decoration: underline;
+    transition: color 0.15s var(--ease-smooth);
+}
+
+.contact-form-note-privacy {
+    font-size: 0.7rem;
+    color: var(--gray-dark);
+    margin-top: 1rem;
+    text-align: center;
+    letter-spacing: var(--tracking-mono);
+}
+.contact-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 500;
+    background-color: rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+}
+
+.contact-modal {
+    position: relative;
+    background-color: var(--white);
+    border-radius: var(--radius-md);
+    padding: 48px 40px 40px;
+    width: 100%;
+    max-width: 520px;
+    max-height: 90dvh;
+    overflow-y: auto;
+    animation: contact-modal-in 0.3s var(--ease-spring) both;
+}
+
+.contact-modal-close {
+    position: absolute;
+    top: 16px;
+    right: 20px;
+    font-size: 1rem;
+    color: var(--gray-dark);
+    line-height: 1;
+    padding: 4px 8px;
+    transition: color 0.15s var(--ease-smooth);
+}
+
+.contact-modal-close:hover {
+    color: var(--black);
+}
+
+.contact-modal-label {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    letter-spacing: var(--tracking-mono);
+    text-transform: uppercase;
+    color: var(--gray-dark);
+    margin-bottom: 8px;
+}
+
+.contact-modal-title {
+    font-family: var(--font-sans);
+    font-size: clamp(1.5rem, 4vw, 1.875rem);
+    font-weight: 500;
+    letter-spacing: var(--tracking-sans);
+    color: var(--black);
+    margin-bottom: 32px;
+    line-height: 1.15;
+}
+
+/* ── Form ── */
+.contact-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.contact-form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.contact-form-group label {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    letter-spacing: var(--tracking-mono);
+    text-transform: uppercase;
+    color: var(--gray-dark);
+}
+
+.contact-form-group input,
+.contact-form-group textarea {
+    font-family: var(--font-sans);
+    font-size: 0.9375rem;
+    letter-spacing: var(--tracking-sans);
+    color: var(--black);
+    background-color: var(--white);
+    border: 1.5px solid var(--gray-light);
+    border-radius: var(--radius-sm);
+    padding: 12px 16px;
+    width: 100%;
+    resize: none;
+    transition: border-color 0.18s var(--ease-smooth);
+    outline: none;
+}
+
+.contact-form-group input:focus,
+.contact-form-group textarea:focus {
+    border-color: var(--black);
+}
+
+.contact-form-group input::placeholder,
+.contact-form-group textarea::placeholder {
+    color: #aaa;
+}
+
+.contact-form-submit {
+    display: flex;
+    justify-content: flex-start;
+    align-self: center;
+    margin-top: 4px;
+}
+
+/* ── Feedback states ── */
+.contact-feedback {
+    border-radius: var(--radius-sm);
+    padding: 16px 20px;
+    font-family: var(--font-sans);
+    font-size: 0.9375rem;
+    line-height: 1.6;
+}
+
+.contact-feedback--success {
+    background-color: #f0fdf0;
+    border: 1.5px solid #a3e8a3;
+    text-align: center;
+}
+
+.contact-feedback-heading {
+    font-weight: 600;
+    font-size: 1.125rem;
+    margin-bottom: 6px;
+}
+
+.contact-feedback-body {
+    color: var(--gray-dark);
+}
+
+.contact-feedback--error {
+    background-color: #fff5f5;
+    border: 1.5px solid #fca5a5;
+    color: #c53030;
+}
+
+.contact-feedback--error a {
+    color: inherit;
+    text-decoration: underline;
+}
+
+/* ── Responsive ── */
+@media (max-width: 480px) {
+    .contact-modal {
+        padding: 40px 24px 32px;
+        border-radius: var(--radius-md) var(--radius-md) 0 0;
+        max-height: 95dvh;
+        margin-top: auto;
+    }
+
+    .contact-overlay {
+        align-items: flex-end;
+    }
+}

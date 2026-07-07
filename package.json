@@ -15,11 +15,13 @@
     "@remix-run/serve": "^2.17.5",
     "@supabase/supabase-js": "^2.108.2",
     "isbot": "^5.1.26",
+    "nodemailer": "^9.0.3",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },
   "devDependencies": {
     "@remix-run/dev": "^2.17.5",
+    "@types/nodemailer": "^8.0.1",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
     "@typescript-eslint/eslint-plugin": "^8.33.0",

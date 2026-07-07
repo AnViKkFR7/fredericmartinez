@@ -3,6 +3,7 @@ import { json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import { getWebSection, getWebServices } from "~/lib/content.server";
 import ServiceCard from "~/components/ui/ServiceCard";
+import { useContactModal } from "~/context/ContactModalContext";
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
   const attrs = data?.section?.attrs ?? {};
@@ -21,6 +22,7 @@ export async function loader(_args: LoaderFunctionArgs) {
 }
 
 export default function ServiciosRoute() {
+  const { openModal } = useContactModal();
   const { section, services } = useLoaderData<typeof loader>();
   const attrs = section?.attrs ?? {};
 
@@ -52,10 +54,10 @@ export default function ServiciosRoute() {
           )}
 
           <div className="hero-ctas">
-            <a href="mailto:hola@fredericmartinez.com" className="btn btn-lime">
+            <button onClick={openModal} className="btn btn-lime">
               CUÉNTAME TU PROYECTO
               <span className="btn-icon">&#8599;</span>
-            </a>
+            </button>
           </div>
         </div>
 

@@ -72,7 +72,7 @@
 }
 
 [data-radial-marquee-rotate] {
-  animation: rotateMarquee 85s linear infinite;
+  animation: rotateMarquee 85s linear infinite reverse;
   transform-origin: center center;
 }
 
@@ -198,7 +198,7 @@
    ============================================================ */
 
 /* ── 1. MÓVIL VERTICAL ── */
-/* ej: iPhone, Android en portrait — hasta 767px de ancho */
+/* ej: iPhone, Android en portrait — hasta 767px de ancho y máximo 950px de alto */
 @media (max-width: 767px) and (max-height: 950px) and (orientation: portrait) {
   .home-hero__marquee-row {
     height: 60vh;
@@ -217,11 +217,13 @@
     --y: 400%;
   }
   .home-hero-upper {
-    height: 100vh;
+    height: calc(100vh - var(--nav-height));
     padding-top: 0vh;
   }
 }
 
+/* ── 1. MÓVIL VERTICAL ── */
+/* ej: iPhone, Android en portrait — hasta 767px de ancho y mínimo 800px de alto */
 @media (max-width: 767px) and (min-height: 800px) and (orientation: portrait) {
   .home-hero__marquee-row {
     height: 40vh;
@@ -238,6 +240,10 @@
 
   .radial-marquee__list {
     --y: 400%;
+  }
+  .home-hero-upper {
+    height: calc(100vh - var(--nav-height) - 40vh);
+    padding-top: 0vh;
   }
 }
 
@@ -280,7 +286,7 @@
 }
 
 /* ── 3. TABLET VERTICAL ── */
-/* ej: iPad en portrait — entre 1024px y 1224px de ancho */
+/* ej: iPad en portrait — entre 1024px y 1224px de ancho y mínimo 1000px de alto */
 @media (min-width: 1024px) and (max-width: 1224px) and (min-height: 1000px) and (orientation: portrait) {
   .home-hero__marquee-row {
     height: 50vh;
@@ -302,6 +308,8 @@
   }
 }
 
+/* ── 3. TABLET VERTICAL ── */
+/* ej: iPad en portrait — entre 768px y 1024px de ancho y mínimo 1000px de alto */
 @media (min-width: 768px) and (max-width: 1024px) and (min-height: 1000px) and (orientation: portrait) {
   .home-hero__marquee-row {
     height: 50vh;
@@ -324,22 +332,31 @@
 }
 
 /* ── 4. TABLET HORIZONTAL ── */
-/* ej: iPad rotado — entre 768px y 1224px de ancho, landscape */
+/* ej: iPad rotado — entre 768px y 1224px de ancho, landscape y máximo 600px de alto */
 @media (min-width: 768px) and (max-width: 1224px) and (max-height: 600px) and (orientation: landscape) {
   .home-hero__marquee-row {
-    height: 100vh;
+    height: calc(100vh - var(--nav-height));
   }
   .radial-marquee__half-circle {
     height: 280%;
   }
   .radial-marquee__item {
-    width: 22em;
+    width: 17em;
   }
   .radial-marquee__card-p {
-    font-size: 1.5em;
+    font-size: 1.2em !important;
+  }
+  .home-hero {
+    height: 185vh;
+  }
+  .home-hero-upper {
+    height: 100vh;
+    padding-top: 10vh;
   }
 }
 
+/* ── 4. TABLET HORIZONTAL ── */
+/* ej: iPad rotado — entre 768px y 1224px de ancho, landscape y máximo 400px de alto */
 @media (min-width: 768px) and (max-width: 1224px) and (max-height: 400px) and (orientation: landscape) {
   .home-hero__marquee-row {
     height: 100vh;
@@ -369,7 +386,7 @@
 }
 
 /* ── 4. TABLET HORIZONTAL ── */
-/* ej: iPad rotado — entre 768px y 1224px de ancho, landscape */
+/* ej: iPad rotado — entre 768px y 1224px de ancho, landscape y mínimo 601px de alto */
 @media (min-width: 768px) and (max-width: 1224px) and (min-height: 601px) and (orientation: landscape) {
   .home-hero__marquee-row {
     height: 60vh;
@@ -435,6 +452,8 @@
   }
 }
 
+/* ── 6. PC HORIZONTAL ── */
+/* ej: laptop/monitor de escritorio estándar — más de 1224px de ancho y más de 900px de alto */
 @media (min-width: 1225px) and (min-height: 900px) and (orientation: landscape) {
   .home-hero__marquee-row {
     height: 50vh;
@@ -446,7 +465,7 @@
     width: 26em;
   }
   .radial-marquee__card-p {
-    font-size: 2em !important;
+    font-size: 1.5em !important;
   }
   .home-hero-upper {
     height: 50vh;

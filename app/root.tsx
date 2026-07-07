@@ -11,6 +11,8 @@ import {
 import { getWebSection } from "~/lib/content.server";
 import Header from "~/components/layout/Header";
 import Footer from "~/components/layout/Footer";
+import { ContactModalProvider } from "~/context/ContactModalContext";
+import ContactModal from "~/components/ui/ContactModal";
 import "~/styles/global.css";
 
 export const links: LinksFunction = () => [
@@ -42,9 +44,12 @@ export default function App() {
         <Links />
       </head>
       <body>
-        <Header />
-        <Outlet />
-        <Footer globalSection={globalSection} />
+        <ContactModalProvider>
+          <Header />
+          <Outlet />
+          <Footer globalSection={globalSection} />
+          <ContactModal />
+        </ContactModalProvider>
         <ScrollRestoration />
         <Scripts />
       </body>

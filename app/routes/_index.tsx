@@ -27,10 +27,8 @@ export default function IndexRoute() {
   const titleLine1 = (attrs["hero_title_line1"] as string) ?? "";
   const titleLine2 = (attrs["hero_title_line2"] as string) ?? "";
   const subtitle = (attrs["hero_subtitle"] as string) ?? "";
-  const carouselItems = (attrs["carousel_items"] as string[]) ?? [];
+  const carouselItems = (attrs["carousel_items"] as { text: string; imageSrc: string }[]) ?? [];
   const count = carouselItems.length || 1;
-  const angleStep = 360 / count;
-  const radius = 370;
 
   return (
     <main>
@@ -58,7 +56,7 @@ export default function IndexRoute() {
           </div>
         </div>
         <ScrollIndicator />
-        <CarouselHome items={carouselItems} radius={radius} angleStep={angleStep} />
+        <CarouselHome carouselItems={carouselItems} />
 
       </section>
     </main>

@@ -3,6 +3,7 @@ import "~/styles/CarouselHome.css";
 import CardCarouselHome from "./CardCarouselHome";
 
 interface CarouselHomeProps {
+    carouselItems?: { text: string; imageSrc: string }[];
     text?: string;
     size?: number;
     color?: string;
