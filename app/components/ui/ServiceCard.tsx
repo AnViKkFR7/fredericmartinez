@@ -17,7 +17,9 @@ export default function ServiceCard({ service }: ServiceCardProps) {
       <div className="service-card-thumb-wrapper">
         <div className="service-card-thumb">
           <h3 className="service-card-title">{service.title}</h3>
-          <img src="/public/images/proyectos3.png" alt={service.description} className="service-card-thumb-img" />
+          {service.media && service.media.length > 0 && (
+            <img src={service.media[0]?.url_externa} alt={service.media[0]?.alt_text ?? service.title} className="service-card-thumb-img" />
+          )}
         </div>
         <div>
           <p className="service-card-desc">QUÉ   SÉ   HACER:</p>

@@ -142,6 +142,7 @@ export async function getWebServices(): Promise<WebService[]> {
         order: (attrs['service_order'] as number) ?? 0,
         description: (attrs['description'] as string) ?? item.summary ?? '',
         que_se_hacer : (attrs['que_se_hacer'] as string[]) ?? [],
+        media: item.item_media ?? [],
       }
     })
     .sort((a, b) => a.order - b.order)

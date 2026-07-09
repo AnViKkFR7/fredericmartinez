@@ -70,7 +70,7 @@ export default function ServiciosRoute() {
         <div className="service-section-cards-wrapper"
         >
           {services.map((service) => (
-            <ServiceCard key={`full-${service.id}`} service={service} />
+            <ServiceCard key={`full-${service.id}`} service={service as any} />
           ))}
         </div>
       </div>

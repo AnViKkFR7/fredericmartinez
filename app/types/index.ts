@@ -61,6 +61,7 @@ export interface WebService {
   order: number
   description: string
   que_se_hacer: string[]
+  media: ItemMediaFromDB[] | null
 }
 
 export interface TrayectoriaSlide {
