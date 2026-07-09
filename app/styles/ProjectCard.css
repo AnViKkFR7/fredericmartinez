@@ -1,0 +1,112 @@
+/* ============================================================
+   PROJECT CARD
+   ============================================================ */
+.project-card {
+  background-color: var(--white);
+  border-radius: 24px;
+  overflow: hidden;
+  border: 1px solid var(--gray-light);
+  transition:
+    transform 0.3s var(--ease-spring),
+    box-shadow 0.2s var(--ease-smooth);
+}
+
+.project-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 14px 44px rgba(0, 0, 0, 0.1);
+}
+
+.project-card-image {
+  width: 100%;
+  aspect-ratio: 16/9;
+  background-color: var(--gray-light);
+  position: relative;
+  height: 200px;
+}
+
+.project-card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.project-card-num {
+  position: absolute;
+  top: 14px;
+  left: 16px;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: var(--tracking-mono);
+  color: var(--white);
+  background-color: rgba(0, 0, 0, 0.38);
+  padding: 4px 10px;
+  border-radius: var(--radius-pill);
+  backdrop-filter: blur(4px);
+}
+
+.project-card-body {
+  padding: 28px 28px 32px;
+}
+
+.project-card-client {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: var(--tracking-mono);
+  text-transform: uppercase;
+  color: var(--blue-dark);
+  margin-bottom: 10px;
+}
+
+.project-card-title {
+  font-size: 1.375rem;
+  font-weight: 600;
+  letter-spacing: var(--tracking-sans);
+  line-height: 1.22;
+  margin-bottom: 14px;
+}
+
+.project-card-desc {
+  font-size: 0.9375rem;
+  color: var(--gray-dark);
+  line-height: 1.62;
+  margin-bottom: 20px;
+}
+
+.project-card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.project-tag {
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  letter-spacing: var(--tracking-mono);
+  text-transform: uppercase;
+  padding: 5px 12px;
+  border-radius: var(--radius-pill);
+  background-color: var(--gray-light);
+  color: var(--gray-dark);
+}
+
+.project-card-result {
+  padding-top: 18px;
+  border-top: 1px solid var(--gray-light);
+}
+
+.project-card-result-label {
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  letter-spacing: var(--tracking-mono);
+  text-transform: uppercase;
+  color: var(--blue-dark);
+  margin-bottom: 8px;
+}
+
+.project-card-result-text {
+  font-size: 0.875rem;
+  color: var(--gray-dark);
+  line-height: 1.58;
+}
+

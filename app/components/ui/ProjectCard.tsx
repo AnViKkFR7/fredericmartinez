@@ -1,4 +1,5 @@
 import type { ProjectCase } from "~/types";
+import "~/styles/ProjectCard.css";
 
 interface ProjectCardProps {
   project: ProjectCase;
@@ -11,7 +12,11 @@ export default function ProjectCard({ project }: ProjectCardProps) {
     <article className="project-card">
       <div className="project-card-image">
         <span className="project-card-num">{orderLabel}</span>
-        {/* TODO: reemplazar por imagen real */}
+        <img
+          src={project.media[0]?.url_externa ?? ""}
+          alt={project.media[0]?.alt_text ?? project.title}
+          className="project-card-img"
+        />
       </div>
       <div className="project-card-body">
         <p className="project-card-client">{project.client}</p>

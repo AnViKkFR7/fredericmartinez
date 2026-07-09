@@ -47,7 +47,7 @@ export default function App() {
         <ContactModalProvider>
           <Header />
           <Outlet />
-          <Footer globalSection={globalSection} />
+          <Footer globalSection={globalSection ?? null} />
           <ContactModal />
         </ContactModalProvider>
         <ScrollRestoration />

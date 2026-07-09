@@ -201,10 +201,10 @@
 /* ej: iPhone, Android en portrait — hasta 767px de ancho y máximo 950px de alto */
 @media (max-width: 767px) and (max-height: 950px) and (orientation: portrait) {
   .home-hero__marquee-row {
-    height: 60vh;
+    height: 65vh;
   }
   .radial-marquee__half-circle {
-    height: 320%;
+    height: 300%;
   }
   .radial-marquee__item {
     width: 20em;

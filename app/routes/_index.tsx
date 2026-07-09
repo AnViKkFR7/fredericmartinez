@@ -2,7 +2,6 @@ import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { Link, useLoaderData } from "@remix-run/react";
 import { getWebSection } from "~/lib/content.server";
-import CarouselCircular from "~/components/ui/CarouselCircular";
 import ButtonSlider from "~/components/ui/ButtonSlider";
 import CarouselHome from "~/components/ui/CarouselHome";
 import ScrollIndicator from "~/components/ui/ScrollIndicator";
@@ -55,7 +54,7 @@ export default function IndexRoute() {
             <ButtonSlider to="/proyectos" text="VER PROYECTOS" />
           </div>
         </div>
-        <ScrollIndicator />
+        <ScrollIndicator></ScrollIndicator>
         <CarouselHome carouselItems={carouselItems} />
 
       </section>

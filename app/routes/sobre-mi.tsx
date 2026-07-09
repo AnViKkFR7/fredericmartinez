@@ -1,56 +1,10 @@
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
-import { getWebSection } from "~/lib/content.server";
+import { getTrayectoriaSlide, getWebSection } from "~/lib/content.server";
 import TrayectoriaCarousel from "~/components/ui/TrayectoriaCarousel";
-import type { TrayectoriaSlide } from "~/components/ui/TrayectoriaCarousel";
 import ButtonSlider from "~/components/ui/ButtonSlider";
 import "~/styles/SobreMi.css";
-import ScrollIndicator from "~/components/ui/ScrollIndicator";
-
-// TODO: reemplazar con items de tipo 'trayectoria' en Supabase cuando se añadan al schema
-const TRAYECTORIA_SLIDES: TrayectoriaSlide[] = [
-  {
-    id: "1",
-    category: "FORMACIÓN",
-    years: "2016 – 18",
-    title: "Grado Superior en Marketing y Publicidad",
-    institution: "CEFP Nuria",
-    color: "dark",
-  },
-  {
-    id: "2",
-    category: "FORMACIÓN",
-    years: "2019 – 21",
-    title: "Diseño y Comunicación Visual",
-    institution: "ESDI Barcelona",
-    color: "dark",
-  },
-  {
-    id: "3",
-    category: "EXPERIENCIA",
-    years: "2019 – 26",
-    title: "Producción Audiovisual Corporativa",
-    institution: "zonatv",
-    color: "blue",
-  },
-  {
-    id: "4",
-    category: "PROYECTO",
-    years: "2022 – 23",
-    title: "Plan de Comunicación",
-    institution: "Grau Distribucions",
-    color: "dark",
-  },
-  {
-    id: "5",
-    category: "PROYECTO",
-    years: "2023",
-    title: "Estrategia y Plan de Comunicación",
-    institution: "elBulli Foundation",
-    color: "blue",
-  },
-];
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
   const attrs = data?.section?.attrs ?? {};
@@ -62,11 +16,12 @@ export const meta: MetaFunction<typeof loader> = ({ data }) => {
 
 export async function loader(_args: LoaderFunctionArgs) {
   const section = await getWebSection("sobre_mi");
-  return json({ section });
+  const slides = await getTrayectoriaSlide();
+  return json({ section, slides });
 }
 
 export default function SobreMiRoute() {
-  const { section } = useLoaderData<typeof loader>();
+  const { section, slides } = useLoaderData<typeof loader>();
   const attrs = section?.attrs ?? {};
 
   const heroTitle = (attrs["hero_title"] as string) ?? "";
@@ -106,7 +61,6 @@ export default function SobreMiRoute() {
           </div>
         </div>
       </section>
-      <ScrollIndicator />
       {/* ── TRAYECTORIA: label + título + descripción ── */}
       <section id="trayectoria" className="trayectoria-section">
         <div className="trayectoria-header">
@@ -118,7 +72,7 @@ export default function SobreMiRoute() {
         </div>
 
         {/* ── CAROUSEL DRAG MANUAL ── */}
-        <TrayectoriaCarousel slides={TRAYECTORIA_SLIDES} />
+        <TrayectoriaCarousel slides={slides} />
       </section>
     </main>
   );

@@ -21,6 +21,19 @@ export interface RawItem {
   status: string
   item_type: string
   attribute_values: RawAttributeValue[]
+  item_media: ItemMediaFromDB[]
+}
+
+export interface ItemMediaFromDB {
+  id: string;
+  item_id: string;
+  file_type: 'image' | 'pdf' | 'other';
+  url_externa: string;
+  title: string | null;
+  alt_text: string | null;
+  sort_order: number;
+  metadata: any;
+  created_at: string;
 }
 
 export type AttributeMap = Record<string, string | number | boolean | string[] | number[] | unknown | null>
@@ -39,6 +52,7 @@ export interface ProjectCase {
   description: string
   result: string
   tags: string[]
+  media: ItemMediaFromDB[]
 }
 
 export interface WebService {
@@ -46,5 +60,16 @@ export interface WebService {
   title: string
   order: number
   description: string
+  que_se_hacer: string[]
+}
+
+export interface TrayectoriaSlide {
+  id: string;
+  category: string;
+  institution: string;
+  order: string;
+  title: string;
+  years: string;
+  color: "dark" | "blue";
 }
 

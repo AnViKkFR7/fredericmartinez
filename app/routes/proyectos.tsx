@@ -4,6 +4,8 @@ import { useLoaderData } from "@remix-run/react";
 import { getWebSection, getProjectCases } from "~/lib/content.server";
 import ProjectCard from "~/components/ui/ProjectCard";
 import { useContactModal } from "~/context/ContactModalContext";
+import ButtonSlider from "~/components/ui/ButtonSlider";
+import "~/styles/Proyectos.css";
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
   const attrs = data?.section?.attrs ?? {};
@@ -29,74 +31,49 @@ export default function ProyectosRoute() {
   const titleLine1 = (attrs["hero_title_line1"] as string) ?? "";
   const titleLine2 = (attrs["hero_title_line2"] as string) ?? "";
   const heroDesc = (attrs["hero_description"] as string) ?? "";
-  const ctaTitle = (attrs["cta_title"] as string) ?? "";
-  const ctaSubtitle = (attrs["cta_subtitle"] as string) ?? "";
 
   return (
-    <main className="page">
-      {/* Hero */}
-      <div className="section-block" style={{ paddingTop: 80 }}>
-        <h1 className="section-title" style={{ maxWidth: 800 }}>
-          {titleLine1}
-          {titleLine2 && (
-            <>
-              <br />
-              <span style={{ color: "var(--gray-dark)", fontWeight: 400 }}>
-                {titleLine2}
-              </span>
-            </>
-          )}
-        </h1>
-        {heroDesc && <p className="section-desc">{heroDesc}</p>}
-      </div>
+    <main>
+      <section className="hero-proyectos-sky">
+        <div className="hero-proyectos-content">
+          <h1 className="hero-proyectos-title">
+            {titleLine1}
+            {titleLine2 && (
+              <>
+                <br />
+                <span className="hero-proyectos-title-dim">{titleLine2}</span>
+              </>
+            )}
+          </h1>
 
+          {(heroDesc) && (
+            <div className="hero-proyectos-desc-block">
+              {heroDesc && <p className="hero-proyectos-desc-line">{heroDesc}</p>}
+            </div>
+          )}
+
+          <div className="hero-proyectos-btn-block">
+            <ButtonSlider text="CUÉNTAME TU PROYECTO" onClick={openModal} />
+          </div>
+        </div>
+      </section>
       {/* Projects */}
-      <div className="section-block" style={{ paddingTop: 0 }}>
-        <div className="projects-grid">
+      <div className="proyectos-section-block" style={{ paddingTop: 0 }}>
+        <div className="proyectos-grid">
           {projects.map((project) => (
-            <ProjectCard key={project.id} project={project} />
+            <ProjectCard
+              key={project.id}
+              project={{
+                ...project,
+                media: project.media.map((item) => ({
+                  ...item,
+                  metadata: item.metadata ?? {},
+                })),
+              }}
+            />
           ))}
         </div>
       </div>
-
-      {/* CTA inline */}
-      {(ctaTitle || ctaSubtitle) && (
-        <div
-          className="section-block"
-          style={{
-            paddingTop: 64,
-            paddingBottom: 96,
-            borderTop: "1px solid var(--gray-light)",
-          }}
-        >
-          <h2
-            style={{
-              fontSize: "clamp(1.75rem, 4vw, 2.75rem)",
-              fontWeight: 500,
-              letterSpacing: "var(--tracking-sans)",
-              marginBottom: 12,
-            }}
-          >
-            {ctaTitle}
-          </h2>
-          <p
-            style={{
-              fontFamily: "var(--font-mono)",
-              fontSize: "0.75rem",
-              letterSpacing: "var(--tracking-mono)",
-              textTransform: "uppercase",
-              color: "var(--gray-dark)",
-              marginBottom: 32,
-            }}
-          >
-            {ctaSubtitle}
-          </p>
-          <button onClick={openModal} className="btn btn-lime">
-            HABLEMOS
-            <span className="btn-icon">&#8599;</span>
-          </button>
-        </div>
-      )}
     </main>
   );
 }

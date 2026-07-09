@@ -207,7 +207,7 @@
 .traj-card {
     position: absolute;
     width: clamp(360px, 48vw, 350px); /* NUEVO: cards bastante más grandes */
-    border-radius: 24px;
+    border-radius: 10px;
     padding: 40px 40px 48px;
     display: flex;
     flex-direction: column;
@@ -304,7 +304,7 @@
 @media (max-width: 1268px) {
     .traj-carousel-stage {
         overflow: hidden;
-        height: 300px;
+        height: 75%px;
     }
 
     .about-split-title {
@@ -345,7 +345,7 @@
 @media (max-width: 768px) {
     .traj-card {
         width: 200px; /* NUEVO: cards bastante más grandes */
-        border-radius: 14px;
+        border-radius: 10px;
         padding: 20px 20px 28px;
         gap: 1.5rem;
     }
@@ -402,7 +402,7 @@
         height: 300px;
     }
     .traj-arc-container {
-        height: 260px;
+        height: 75%;
     }
 }
 
@@ -411,6 +411,6 @@
         height: 260px;
     }
     .traj-arc-container {
-        height: 200px;
+        height: 75%;
     }
 }

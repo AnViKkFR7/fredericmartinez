@@ -1,0 +1,147 @@
+.hero-proyectos-sky {
+    height: 35vh;
+    background-image: url(/app/images/Home_Servicios.png);
+    margin-top: var(--nav-height);
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    clip-path: inset(12px round 24px);
+    outline: 12px solid white;
+}
+
+.proyectos-card-thumb-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    max-height: fit-content;
+}
+
+.hero-proyectos-title {
+    font-size: 2.5rem;
+    font-weight: 400;
+    letter-spacing: var(--tracking-sans);
+    line-height: 1.08;
+    color: var(--white);
+}
+.hero-proyectos-title-dim {
+    font-size: 2.5rem;
+    font-weight: 400;
+    letter-spacing: var(--tracking-sans);
+    line-height: 1.08;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.hero-proyectos-desc-block {
+    max-width: 800px;
+    margin: 24px auto 0;
+}
+
+.hero-proyectos-desc-line {
+    font-size: 0.8rem;
+    font-weight: 300;
+    color: rgba(255, 255, 255, 0.85);
+    line-height: 1.65;
+}
+.hero-proyectos-title-dim {
+    font-size: 2.5rem;
+    font-weight: 400;
+    letter-spacing: var(--tracking-sans);
+    line-height: 1.08;
+    color: rgba(255, 255, 255, 0.6);
+}
+.hero-proyectos-content {
+    width: 100%;
+    max-width: var(--container-max);
+    padding: auto 20px;
+    text-align: center;
+    justify-content: center;
+}
+
+.hero-proyectos-desc-block {
+    max-width: 600px;
+    margin: 24px auto 0;
+}
+
+.hero-proyectos-desc-line {
+    font-size: 0.8rem;
+    font-weight: 300;
+    color: rgba(255, 255, 255, 0.85);
+    line-height: 1.65;
+}
+
+.hero-proyectos-btn-block {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    margin-top: 40px;
+    flex-wrap: wrap;
+}
+
+.proyectos-section-block {
+    width: 100%;
+    padding: 20px 20px 80px 20px;
+    height: fit-content;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* ============================================================
+   PROJECTS GRID
+   ============================================================ */
+.proyectos-grid {
+    display: grid;
+    grid-template-columns: minmax(340px, 1fr) minmax(340px, 1fr) minmax(340px, 1fr);
+    gap: 5rem;
+    margin-top: 3rem;
+    width: 85vw;
+    align-content: space-around;
+    align-self: center;
+}
+
+@media (max-width: 860px) {
+    .proyectos-grid {
+        grid-template-columns: 1fr;
+        width: 100%;
+        margin-top: 2rem;
+        gap: 2rem;
+    }
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 860px) {
+    .hero-proyectos-sky {
+        height: auto;
+        min-height: 35vh;
+        padding: 48px 20px;
+    }
+
+    .hero-proyectos-title,
+    .hero-proyectos-title-dim {
+        font-size: 1.75rem;
+    }
+
+    .hero-proyectos-desc-block {
+        margin-top: 16px;
+    }
+    .hero-proyectos-content {
+        padding: 0 20px;
+    }
+
+    .hero-proyectos-btn-block {
+        margin-top: 20px;
+    }
+
+    .proyectos-section-block {
+        padding-bottom: 20px;
+        padding-left: 12px;
+        padding-right: 12px;
+    }
+}

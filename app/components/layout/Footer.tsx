@@ -1,6 +1,8 @@
 import { Link, useLocation } from "@remix-run/react";
 import type { WebSection } from "~/types";
 import { useContactModal } from "~/context/ContactModalContext";
+import ButtonSlider from "../ui/ButtonSlider";
+import "~/styles/Footer.css";
 
 interface FooterProps {
   globalSection: WebSection | null;
@@ -28,10 +30,7 @@ export default function Footer({ globalSection }: FooterProps) {
           </div>
           <h2 className="cta-section-title">{ctaTitle}</h2>
           <p className="cta-section-subtitle">{ctaSubtitle}</p>
-          <button onClick={openModal} className="btn btn-lime">
-            HABLEMOS
-            <span className="btn-icon">↗</span>
-          </button>
+          <ButtonSlider text="HABLEMOS" onClick={openModal} />
         </section>
       )}
 
@@ -41,9 +40,21 @@ export default function Footer({ globalSection }: FooterProps) {
             <strong>Frederic</strong>
             <span> Martínez</span>
           </Link>
-          <p className="footer-copy">
-            &copy; {new Date().getFullYear()} Frederic Martínez
-          </p>
+          <div className="footer-copy-block">
+            <p className="footer-copy footer-copy--desktop">
+              &copy; {new Date().getFullYear()} Frederic Martínez
+            </p>
+            <span className="footer-copy footer-copy--desktop">|</span>
+            <a
+              href="https://moiraordo.es/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="footer-copy"
+            >
+              Developed by MoiraOrdo
+            </a>
+          </div>
+
           <Link to="/aviso-legal" className="footer-legal-link">
             Aviso legal
           </Link>
