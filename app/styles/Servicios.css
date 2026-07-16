@@ -181,6 +181,7 @@
     justify-content: center;
     border-radius: 50%;
     background-color: var(--black);
+    color: var(--white);
 }
 
 .service-card-list-item-text {

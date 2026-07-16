@@ -51,9 +51,9 @@ export default function SobreMiRoute() {
             {heroBadge && (
               <div className="about-split-badge-row">
                 <div className="about-split-avatars" aria-hidden>
-                  <img src="/public/images/Icono FS Gava.png" alt="Icono FS Gava" className="about-split-avatar" />
-                  <img src="/public/images/Icono Merkapiso.png" alt="Icono Merkapiso" className="about-split-avatar" />
-                  <img src="/public/images/Icono TC.png" alt="Icono TC" className="about-split-avatar" />
+                  <img src="/images/Icono FS Gava.png" alt="Icono FS Gava" className="about-split-avatar" />
+                  <img src="/images/Icono Merkapiso.png" alt="Icono Merkapiso" className="about-split-avatar" />
+                  <img src="/images/Icono TC.png" alt="Icono TC" className="about-split-avatar" />
                 </div>
                 <p className="about-split-badge-text">{heroBadge}</p>
               </div>

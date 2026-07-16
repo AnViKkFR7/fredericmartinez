@@ -373,8 +373,13 @@
 
     .about-split-grid {
         grid-template-columns: 1fr;
-        grid-template-rows: 280px 1fr;
+        grid-template-rows: auto 1fr;
         min-height: unset;
+        max-height: calc(100vh - var(--nav-height) - 16px);
+    }
+
+    .about-split-image {
+        max-height: fit-content;
     }
 
     .about-split-content {
@@ -384,6 +389,34 @@
     .traj-carousel-track {
         padding-left: 24px;
         padding-right: 24px;
+    }
+}
+
+@media (max-width: 768px) {
+    .about-split-content {
+        padding: 32px 20px;
+    }
+
+    .about-split-grid {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto 1fr;
+        min-height: auto;
+        max-height: 90vh;
+    }
+
+    .about-split-image {
+        max-height: fit-content;
+    }
+
+    .about-split-title {
+        font-size: 1rem;
+        margin-bottom: 15px;
+    }
+
+    .about-split-desc {
+        font-size: 0.7125rem;
+        line-height: 1.5;
+        margin-bottom: 20px;
     }
 }
 
