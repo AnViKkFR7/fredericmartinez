@@ -1,5 +1,5 @@
 import { supabase, isConfigured } from '~/lib/supabase.server'
-import type { AttributeMap, ProjectCase, RawAttributeValue, RawItem, TrayectoriaSlide, WebSection, WebService } from '~/types'
+import type { AttributeMap, ProjectCase, ProjectStat, RawAttributeValue, RawItem, TrayectoriaSlide, WebSection, WebService } from '~/types'
 
 const COMPANY_ID = '40e02f2e-8863-4d3a-9bc8-352223d9aab0'
 
@@ -104,47 +104,80 @@ export async function getTrayectoriaSlide(): Promise<TrayectoriaSlide[]> {
     })
 }
 
+function mapProjectStats(attrs: AttributeMap): ProjectStat[] {
+  const nums = (attrs['tarjetas_laterales'] as string[]) ?? []
+  const labels = (attrs['tarjetas_laterales_label'] as string[]) ?? []
+  if (nums.length > 0) {
+    return nums.map((num, i) => ({ num, label: labels[i] ?? '' }))
+  }
+  return (attrs['stats'] as ProjectStat[]) ?? []
+}
+
+function mapProjectCase(item: RawItem): ProjectCase {
+  const attrs = mapAttrs(item.attribute_values)
+  return {
+    id: item.id,
+    title: item.title,
+    order: (attrs['project_order'] as number) ?? 0,
+    client: (attrs['client'] as string) ?? '',
+    description: (attrs['description'] as string) ?? item.summary ?? '',
+    result: (attrs['result'] as string) ?? '',
+    tags: (attrs['tags'] as string[]) ?? [],
+    media: item.item_media ?? [],
+    slug: (attrs['slug'] as string) ?? '',
+    rol: (attrs['rol'] as string) ?? '',
+    duracion: (attrs['duracion'] as string) ?? '',
+    ambito: (attrs['ambito'] as string) ?? '',
+    contexto: (attrs['contexto'] as string) ?? '',
+    reto: (attrs['reto'] as string) ?? '',
+    queHice: (attrs['que_hice'] as string[]) ?? [],
+    resultados: (attrs['resultados'] as string[]) ?? [],
+    stats: mapProjectStats(attrs),
+  }
+}
+
+function mapWebService(item: RawItem): WebService {
+  const attrs = mapAttrs(item.attribute_values)
+  return {
+    id: item.id,
+    title: item.title,
+    order: (attrs['service_order'] as number) ?? 0,
+    description: (attrs['description'] as string) ?? item.summary ?? '',
+    que_se_hacer: (attrs['que_se_hacer'] as string[]) ?? [],
+    media: item.item_media ?? [],
+    paraQuien: (attrs['para_quien'] as string[]) ?? [],
+    incluye: (attrs['incluye'] as string[]) ?? [],
+    relatedProjectSlugs: (attrs['related_project_slugs'] as string[]) ?? [],
+  }
+}
+
 export async function getProjectCases(): Promise<ProjectCase[]> {
   const items = await fetchItems('web_project_case')
-  // Sort items by order attribute
-  items.sort((a, b) => {
-    const attrsA = mapAttrs(a.attribute_values)
-    const attrsB = mapAttrs(b.attribute_values)
-    const orderA = (attrsA['project_order'] as number) ?? 0
-    const orderB = (attrsB['project_order'] as number) ?? 0
-    return orderA - orderB
-  })
-  return items
-    .map((item) => {
-      const attrs = mapAttrs(item.attribute_values)
-      return {
-        id: item.id,
-        title: item.title,
-        order: (attrs['project_order'] as number) ?? 0,
-        client: (attrs['client'] as string) ?? '',
-        description: (attrs['description'] as string) ?? item.summary ?? '',
-        result: (attrs['result'] as string) ?? '',
-        tags: (attrs['tags'] as string[]) ?? [],
-        media: item.item_media ?? [],
-      }
-    })
-    .sort((a, b) => a.order - b.order)
+  return items.map(mapProjectCase).sort((a, b) => a.order - b.order)
+}
+
+export async function getProjectCaseById(id: string): Promise<ProjectCase | null> {
+  const items = await fetchItems('web_project_case')
+  const item = items.find((i) => i.id === id)
+  return item ? mapProjectCase(item) : null
 }
 
 export async function getWebServices(): Promise<WebService[]> {
   const items = await fetchItems('web_service')
-  return items
-    .map((item) => {
-      const attrs = mapAttrs(item.attribute_values)
-      return {
-        id: item.id,
-        title: item.title,
-        order: (attrs['service_order'] as number) ?? 0,
-        description: (attrs['description'] as string) ?? item.summary ?? '',
-        que_se_hacer : (attrs['que_se_hacer'] as string[]) ?? [],
-        media: item.item_media ?? [],
-      }
-    })
-    .sort((a, b) => a.order - b.order)
+  return items.map(mapWebService).sort((a, b) => a.order - b.order)
+}
+
+export async function getServiceById(id: string): Promise<WebService | null> {
+  const items = await fetchItems('web_service')
+  const item = items.find((i) => i.id === id)
+  return item ? mapWebService(item) : null
+}
+
+export async function getRelatedProjects(slugs: string[]): Promise<ProjectCase[]> {
+  if (slugs.length === 0) return []
+  const projects = await getProjectCases()
+  return slugs
+    .map((slug) => projects.find((p) => p.slug === slug))
+    .filter((p): p is ProjectCase => Boolean(p))
 }
 

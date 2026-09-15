@@ -1,5 +1,5 @@
 .hero-proyectos-sky {
-    height: 35vh;
+    height: 42vh;
     background-image: url(/app/images/Home_Servicios.png);
     margin-top: var(--nav-height);
     background-size: cover;
@@ -89,6 +89,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
 }
 
 /* ============================================================
@@ -96,10 +97,9 @@
    ============================================================ */
 .proyectos-grid {
     display: grid;
-    grid-template-columns: minmax(340px, 1fr) minmax(340px, 1fr) minmax(340px, 1fr);
+    grid-template-columns: minmax(340px, 1fr) minmax(340px, 1fr) minmax(340px, 1fr) minmax(340px, 1fr);
     gap: 5rem;
     margin-top: 3rem;
-    width: 75vw;
     align-content: space-around;
     align-self: center;
 }
@@ -131,7 +131,7 @@
 @media (max-width: 860px) {
     .hero-proyectos-sky {
         height: auto;
-        min-height: 35vh;
+        min-height: 42vh;
         padding: 48px 20px;
     }
 

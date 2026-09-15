@@ -1,4 +1,6 @@
 import type { ProjectCase } from "~/types";
+import ButtonSlider from "./ButtonSlider";
+import { toPrettyIdUrl } from "~/lib/slugify";
 import "~/styles/ProjectCard.css";
 
 interface ProjectCardProps {
@@ -39,6 +41,10 @@ export default function ProjectCard({ project }: ProjectCardProps) {
             <p className="project-card-result-text">{project.result}</p>
           </div>
         )}
+
+        <div className="project-card-btn">
+          <ButtonSlider text="VER PROYECTO" to={`/proyectos/${toPrettyIdUrl(project.title, project.id)}`} />
+        </div>
       </div>
     </article>
   );

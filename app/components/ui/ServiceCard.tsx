@@ -1,5 +1,6 @@
 import type { WebService } from "~/types";
 import ButtonSlider from "./ButtonSlider";
+import { toPrettyIdUrl } from "~/lib/slugify";
 
 interface ServiceCardProps {
   service: WebService;
@@ -41,7 +42,7 @@ export default function ServiceCard({ service }: ServiceCardProps) {
       </div>
 
       <div className="service-card-btn">
-        <ButtonSlider text="VER EJEMPLOS" onClick={() => { }} />
+        <ButtonSlider text="VER EJEMPLOS" to={`/servicios/${toPrettyIdUrl(service.title, service.id)}`} />
       </div>
       
     </article>

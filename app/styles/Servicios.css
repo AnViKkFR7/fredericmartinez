@@ -1,5 +1,5 @@
 .hero--sky {
-    height: 35vh;
+    height: 42vh;
     background-image: url(/app/images/Home_Servicios.png);
     margin-top: var(--nav-height);
     background-size: cover;
@@ -211,7 +211,7 @@
 @media (max-width: 860px) {
     .hero--sky {
         height: auto;
-        min-height: 35vh;
+        min-height: 42vh;
         padding: 48px 20px;
     }
 

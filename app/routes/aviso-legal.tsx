@@ -3,7 +3,6 @@ import { Link } from "@remix-run/react";
 import "~/styles/AvisoLegal.css";
 
 export const meta: MetaFunction = () => [
-  { title: "Aviso Legal y Política de Privacidad | Frederic Martínez" },
   {
     name: "description",
     content:

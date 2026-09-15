@@ -16,6 +16,7 @@ import ContactModal from "~/components/ui/ContactModal";
 import "~/styles/global.css";
 
 export const links: LinksFunction = () => [
+  { rel: "icon", href: "/images/favicon.jpeg", type: "image/jpeg" },
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
   {
     rel: "preconnect",
@@ -40,6 +41,7 @@ export default function App() {
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width,initial-scale=1" />
+        <title>Frederic Martínez</title>
         <Meta />
         <Links />
       </head>

@@ -44,6 +44,11 @@ export interface WebSection {
   attrs: AttributeMap
 }
 
+export interface ProjectStat {
+  num: string
+  label: string
+}
+
 export interface ProjectCase {
   id: string
   title: string
@@ -53,6 +58,15 @@ export interface ProjectCase {
   result: string
   tags: string[]
   media: ItemMediaFromDB[]
+  slug: string
+  rol: string
+  duracion: string
+  ambito: string
+  contexto: string
+  reto: string
+  queHice: string[]
+  resultados: string[]
+  stats: ProjectStat[]
 }
 
 export interface WebService {
@@ -62,6 +76,9 @@ export interface WebService {
   description: string
   que_se_hacer: string[]
   media: ItemMediaFromDB[] | null
+  paraQuien: string[]
+  incluye: string[]
+  relatedProjectSlugs: string[]
 }
 
 export interface TrayectoriaSlide {

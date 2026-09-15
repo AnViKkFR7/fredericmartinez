@@ -8,10 +8,7 @@ import ScrollIndicator from "~/components/ui/ScrollIndicator";
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
   const attrs = data?.homeSection?.attrs ?? {};
-  return [
-    { title: (attrs["seo_title"] as string) ?? "Frederic Martínez" },
-    { name: "description", content: (attrs["seo_description"] as string) ?? "" },
-  ];
+  return [{ name: "description", content: (attrs["seo_description"] as string) ?? "" }];
 };
 
 export async function loader(_args: LoaderFunctionArgs) {

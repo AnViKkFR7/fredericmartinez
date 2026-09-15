@@ -9,10 +9,7 @@ import ButtonSlider from "~/components/ui/ButtonSlider";
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
   const attrs = data?.section?.attrs ?? {};
-  return [
-    { title: (attrs["seo_title"] as string) ?? "Servicios | Frederic Martínez" },
-    { name: "description", content: (attrs["seo_description"] as string) ?? "" },
-  ];
+  return [{ name: "description", content: (attrs["seo_description"] as string) ?? "" }];
 };
 
 export async function loader(_args: LoaderFunctionArgs) {
