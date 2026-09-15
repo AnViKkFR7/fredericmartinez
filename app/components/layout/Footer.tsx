@@ -30,7 +30,7 @@ export default function Footer({ globalSection }: FooterProps) {
           </div>
           <h2 className="cta-section-title">{ctaTitle}</h2>
           <p className="cta-section-subtitle">{ctaSubtitle}</p>
-          <ButtonSlider text="HABLEMOS" onClick={openModal} />
+          <ButtonSlider text="HABLEMOS" onClick={openModal} trackEvent="hablemos_click" />
         </section>
       )}
 

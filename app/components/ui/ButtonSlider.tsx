@@ -1,8 +1,8 @@
 import { Link } from "@remix-run/react";
 
 type ButtonSliderProps =
-  | { to: string; text: string; onClick?: never; type?: never; disabled?: never; loadingText?: never }
-  | { to?: never; text: string; onClick?: () => void; type?: "button" | "submit"; disabled?: boolean; loadingText?: string };
+  | { to: string; text: string; trackEvent?: string; onClick?: never; type?: never; disabled?: never; loadingText?: never }
+  | { to?: never; text: string; trackEvent?: string; onClick?: () => void; type?: "button" | "submit"; disabled?: boolean; loadingText?: string };
 
 const ArrowIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="none" width="18" height="18">
@@ -10,7 +10,7 @@ const ArrowIcon = () => (
   </svg>
 );
 
-export default function ButtonSlider({ to, text, onClick, type = "button", disabled, loadingText }: ButtonSliderProps) {
+export default function ButtonSlider({ to, text, trackEvent, onClick, type = "button", disabled, loadingText }: ButtonSliderProps) {
   const label = disabled && loadingText ? loadingText : text;
 
   const inner = (
@@ -24,11 +24,17 @@ export default function ButtonSlider({ to, text, onClick, type = "button", disab
   );
 
   if (to) {
-    return <Link to={to} className="btn btn-arrow">{inner}</Link>;
+    return <Link to={to} className="btn btn-arrow" data-track-event={trackEvent}>{inner}</Link>;
   }
 
   return (
-    <button type={type} onClick={onClick} disabled={disabled} className="btn btn-arrow">
+    <button
+      type={type}
+      onClick={onClick}
+      disabled={disabled}
+      className="btn btn-arrow"
+      data-track-event={trackEvent}
+    >
       {inner}
     </button>
   );

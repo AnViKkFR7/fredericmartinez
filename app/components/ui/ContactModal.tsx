@@ -2,6 +2,7 @@ import { useFetcher } from "@remix-run/react";
 import { useEffect, useRef, useState } from "react";
 import { useContactModal } from "~/context/ContactModalContext";
 import ButtonSlider from "~/components/ui/ButtonSlider";
+import { trackEvent } from "~/lib/analytics";
 import "~/styles/ContactModal.css";
 
 interface ContactActionData {
@@ -29,8 +30,10 @@ export default function ContactModal() {
         if (hasData) {
             if (fetcher.data?.ok) {
                 setSuccess(true);
+                trackEvent("form_submit");
             } else {
                 setHasError(true);
+                trackEvent("form_error");
             }
         }
     }, [hasData, fetcher.data]);

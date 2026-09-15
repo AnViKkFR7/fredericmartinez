@@ -23,6 +23,7 @@ export async function loader({ params }: LoaderFunctionArgs) {
 export default function ProyectoDetailRoute() {
   const { project } = useLoaderData<typeof loader>();
   const heroPhoto = project.media?.[0];
+  const hasMeta = Boolean(project.rol || project.duracion || project.ambito);
 
   return (
     <main>
@@ -33,40 +34,43 @@ export default function ProyectoDetailRoute() {
         </div>
       </section>
 
-      {heroPhoto && (
+      {(heroPhoto || hasMeta) && (
         <div className="detail-hero-img">
-          <div
-            className="detail-hero-img-inner"
-            style={{ backgroundImage: `url(${heroPhoto.url_externa})` }}
-          >
-            <div className="detail-hero-img-overlay">
+          {heroPhoto && (
+            <div
+              className="detail-hero-img-inner"
+              style={{ backgroundImage: `url(${heroPhoto.url_externa})` }}
+            >
               {heroPhoto.alt_text && (
-                <p className="detail-hero-img-caption">{heroPhoto.alt_text}</p>
-              )}
-              {(project.rol || project.duracion || project.ambito) && (
-                <div className="detail-meta-row">
-                  {project.rol && (
-                    <div className="detail-meta-item">
-                      <span>ROL</span>
-                      {project.rol}
-                    </div>
-                  )}
-                  {project.duracion && (
-                    <div className="detail-meta-item">
-                      <span>DURACIÓN</span>
-                      {project.duracion}
-                    </div>
-                  )}
-                  {project.ambito && (
-                    <div className="detail-meta-item">
-                      <span>ÁMBITO</span>
-                      {project.ambito}
-                    </div>
-                  )}
+                <div className="detail-hero-img-overlay">
+                  <p className="detail-hero-img-caption">{heroPhoto.alt_text}</p>
                 </div>
               )}
             </div>
-          </div>
+          )}
+
+          {hasMeta && (
+            <div className="detail-meta-row">
+              {project.rol && (
+                <div className="detail-meta-item">
+                  <span>ROL</span>
+                  {project.rol}
+                </div>
+              )}
+              {project.duracion && (
+                <div className="detail-meta-item">
+                  <span>DURACIÓN</span>
+                  {project.duracion}
+                </div>
+              )}
+              {project.ambito && (
+                <div className="detail-meta-item">
+                  <span>ÁMBITO</span>
+                  {project.ambito}
+                </div>
+              )}
+            </div>
+          )}
         </div>
       )}
 

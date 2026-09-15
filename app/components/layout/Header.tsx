@@ -41,7 +41,7 @@ export default function Header() {
             </ul>
           </nav>
 
-          <button onClick={openModal} className="header-cta-link">
+          <button onClick={openModal} className="header-cta-link" data-track-event="hablemos_click">
             HABLEMOS
           </button>
         </div>

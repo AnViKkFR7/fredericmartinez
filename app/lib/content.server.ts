@@ -1,7 +1,6 @@
 import { supabase, isConfigured } from '~/lib/supabase.server'
+import { COMPANY_ID } from '~/lib/company'
 import type { AttributeMap, ProjectCase, ProjectStat, RawAttributeValue, RawItem, TrayectoriaSlide, WebSection, WebService } from '~/types'
-
-const COMPANY_ID = '40e02f2e-8863-4d3a-9bc8-352223d9aab0'
 
 const ATTR_SELECT = `
   value_text,
