@@ -43,7 +43,7 @@ export default function SobreMiRoute() {
             <h1 className="about-split-title">{heroTitle}</h1>
             <p className="about-split-desc">{heroDesc}</p>
 
-            <ButtonSlider to="/proyectos" text="CONÓCEME EN 60 SEGUNDOS" />
+            <ButtonSlider to="/proyectos" text="EXPLORA MIS PROJECTOS" />
 
             {heroBadge && (
               <div className="about-split-badge-row">
