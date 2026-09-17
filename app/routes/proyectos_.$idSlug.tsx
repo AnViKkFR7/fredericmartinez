@@ -3,7 +3,6 @@ import { json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import { getProjectCaseById } from "~/lib/content.server";
 import { extractIdFromParam } from "~/lib/slugify";
-import "~/styles/Proyectos.css";
 import "~/styles/DetailPage.css";
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
@@ -27,12 +26,10 @@ export default function ProyectoDetailRoute() {
 
   return (
     <main>
-      <section className="hero-proyectos-sky">
-        <div className="detail-hero-content">
-          <h1 className="detail-title">{project.title}</h1>
-          {project.client && <span className="hero-servicios-title-dim">{project.client}</span>}
-        </div>
-      </section>
+      <div className="detail-header">
+        <h1 className="detail-title">{project.title}</h1>
+        {project.client && <p className="detail-subtitle">{project.client}</p>}
+      </div>
 
       {(heroPhoto || hasMeta) && (
         <div className="detail-hero-img">

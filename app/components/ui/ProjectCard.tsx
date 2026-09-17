@@ -35,10 +35,14 @@ export default function ProjectCard({ project }: ProjectCardProps) {
           </ul>
         )}
 
-        {project.result && (
+        {project.resultados.length > 0 && (
           <div className="project-card-result">
-            <p className="project-card-result-label">Resultado</p>
-            <p className="project-card-result-text">{project.result}</p>
+            <p className="project-card-result-label">Resultados</p>
+            <ul className="project-card-result-list">
+              {project.resultados.map((item, index) => (
+                <li key={index}>{item}</li>
+              ))}
+            </ul>
           </div>
         )}
 

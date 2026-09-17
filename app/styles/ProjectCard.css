@@ -110,10 +110,29 @@
   margin-bottom: 8px;
 }
 
-.project-card-result-text {
+.project-card-result-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.project-card-result-list li {
+  position: relative;
+  padding-left: 16px;
   font-size: 0.875rem;
   color: var(--gray-dark);
-  line-height: 1.58;
+  line-height: 1.5;
+}
+
+.project-card-result-list li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 7px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background-color: var(--blue-dark);
 }
 
 .project-card-btn {

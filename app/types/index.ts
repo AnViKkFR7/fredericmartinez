@@ -55,7 +55,6 @@ export interface ProjectCase {
   order: number
   client: string
   description: string
-  result: string
   tags: string[]
   media: ItemMediaFromDB[]
   slug: string

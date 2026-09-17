@@ -4,7 +4,6 @@ import { useLoaderData } from "@remix-run/react";
 import { getServiceById, getRelatedProjects } from "~/lib/content.server";
 import { extractIdFromParam } from "~/lib/slugify";
 import ProjectCard from "~/components/ui/ProjectCard";
-import "~/styles/Servicios.css";
 import "~/styles/DetailPage.css";
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
@@ -28,11 +27,9 @@ export default function ServicioDetailRoute() {
 
   return (
     <main>
-      <section className="hero--sky">
-        <div className="detail-hero-content">
-          <h1 className="detail-title">{service.title}</h1>
-        </div>
-      </section>
+      <div className="detail-header">
+        <h1 className="detail-title">{service.title}</h1>
+      </div>
 
       {heroPhoto && (
         <div className="detail-hero-img">

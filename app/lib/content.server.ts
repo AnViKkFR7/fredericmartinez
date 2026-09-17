@@ -120,7 +120,6 @@ function mapProjectCase(item: RawItem): ProjectCase {
     order: (attrs['project_order'] as number) ?? 0,
     client: (attrs['client'] as string) ?? '',
     description: (attrs['description'] as string) ?? item.summary ?? '',
-    result: (attrs['result'] as string) ?? '',
     tags: (attrs['tags'] as string[]) ?? [],
     media: item.item_media ?? [],
     slug: (attrs['slug'] as string) ?? '',
