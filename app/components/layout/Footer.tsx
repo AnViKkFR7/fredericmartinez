@@ -1,4 +1,5 @@
 import { Link, useLocation } from "@remix-run/react";
+import { openCookiePreferences } from "~/components/ui/CookiePreferences";
 import type { WebSection } from "~/types";
 import { useContactModal } from "~/context/ContactModalContext";
 import ButtonSlider from "../ui/ButtonSlider";
@@ -11,7 +12,9 @@ interface FooterProps {
 export default function Footer({ globalSection }: FooterProps) {
   const { openModal } = useContactModal();
   const { pathname } = useLocation();
-  if (pathname === "/" || pathname === "/sobre-mi") return null;
+  if (pathname === "/" || pathname === "/sobre-mi") return (
+    <footer className="privacy-footer"><button type="button" className="cookie-preferences-link" onClick={openCookiePreferences}>Preferencias de cookies</button></footer>
+  );
 
   const showCta = pathname !== "/aviso-legal";
 
@@ -58,6 +61,7 @@ export default function Footer({ globalSection }: FooterProps) {
           <Link to="/aviso-legal" className="footer-legal-link">
             Aviso legal
           </Link>
+          <button type="button" className="cookie-preferences-link" onClick={openCookiePreferences}>Preferencias de cookies</button>
         </div>
       </footer>
     </>

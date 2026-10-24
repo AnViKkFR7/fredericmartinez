@@ -1,4 +1,4 @@
-import type { LinksFunction, LoaderFunctionArgs } from "@remix-run/node";
+import type { LinksFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { useEffect } from "react";
 import {
@@ -13,9 +13,8 @@ import {
   useLocation,
   useRouteError,
 } from "@remix-run/react";
-import { Analytics } from "@vercel/analytics/remix";
-import { SpeedInsights } from "@vercel/speed-insights/remix";
-import { initAutoTracking, trackPageview } from "~/lib/analytics";
+import { trackPageview, trackNotFound } from "~/lib/analytics";
+import CookiePreferences, { openCookiePreferences } from "~/components/ui/CookiePreferences";
 import { getWebSection } from "~/lib/content.server";
 import Header from "~/components/layout/Header";
 import Footer from "~/components/layout/Footer";
@@ -37,22 +36,13 @@ export const links: LinksFunction = () => [
   },
 ];
 
-export async function loader(_args: LoaderFunctionArgs) {
+export async function loader() {
   const globalSection = await getWebSection("global");
   return json({ globalSection });
 }
 
 export default function App() {
   const { globalSection } = useLoaderData<typeof loader>();
-  const { pathname } = useLocation();
-
-  useEffect(() => {
-    initAutoTracking();
-  }, []);
-
-  useEffect(() => {
-    trackPageview(pathname);
-  }, [pathname]);
 
   return (
     <html lang="es">
@@ -70,8 +60,8 @@ export default function App() {
           <Footer globalSection={globalSection ?? null} />
           <ContactModal />
         </ContactModalProvider>
-        <Analytics />
-        <SpeedInsights />
+        <RouteTracking />
+        <CookiePreferences />
         <ScrollRestoration />
         <Scripts />
       </body>
@@ -112,6 +102,8 @@ export function ErrorBoundary() {
         <Links />
       </head>
       <body>
+        <RouteTracking notFound={isNotFound} />
+        <CookiePreferences />
         <main className="error-page">
           <p className="error-page-code">{isNotFound ? "404" : "Vaya"}</p>
           <h1 className="error-page-title">
@@ -130,9 +122,23 @@ export function ErrorBoundary() {
             Volver al inicio
           </Link>
         </main>
+        <footer className="privacy-footer">
+          <button type="button" className="cookie-preferences-link" onClick={openCookiePreferences}>
+            Preferencias de cookies
+          </button>
+        </footer>
         <Scripts />
       </body>
     </html>
   );
 }
 
+
+function RouteTracking({ notFound = false }: { notFound?: boolean }) {
+  const { pathname, key } = useLocation();
+  useEffect(() => {
+    trackPageview(pathname, key);
+    if (notFound) trackNotFound(key);
+  }, [pathname, key, notFound]);
+  return null;
+}

@@ -1,4 +1,5 @@
 import type { MetaFunction } from "@remix-run/node";
+import { openCookiePreferences } from "~/components/ui/CookiePreferences";
 import { Link } from "@remix-run/react";
 import "~/styles/AvisoLegal.css";
 
@@ -32,7 +33,7 @@ export default function AvisoLegalRoute() {
             Aviso Legal y Política de Privacidad
           </h1>
           <p className="legal-hero-meta">
-            Última actualización: julio de 2026 &nbsp;·&nbsp;{" "}
+            Última actualización: octubre de 2026 &nbsp;·&nbsp;{" "}
             fredericmartinez.com
           </p>
         </div>
@@ -155,7 +156,7 @@ export default function AvisoLegalRoute() {
               <li>
                 <span>
                   <strong>Datos tratados:</strong> nombre, dirección de correo
-                  electrónico y mensaje, recogidos a través del formulario de
+                  electrónico, teléfono si se facilita, mensaje y página y campaña de origen, recogidos a través del formulario de
                   contacto.
                 </span>
               </li>
@@ -175,9 +176,9 @@ export default function AvisoLegalRoute() {
               <li>
                 <span>
                   <strong>Destinatarios:</strong> los datos no se ceden a
-                  terceros. El mensaje se transmite directamente por correo
-                  electrónico al titular y <strong>no se almacena</strong> en
-                  ninguna base de datos.
+                  terceros para sus propios fines. La solicitud se guarda en la bandeja
+                  de Moira Ordo, alojada en Supabase, para gestionar su respuesta.
+                  También puede notificarse al titular por correo electrónico.
                 </span>
               </li>
               <li>
@@ -196,9 +197,8 @@ export default function AvisoLegalRoute() {
                 estar ubicados fuera del Espacio Económico Europeo. Dichas
                 transferencias se realizan bajo garantías adecuadas (Cláusulas
                 Contractuales Tipo aprobadas por la Comisión Europea, art. 46
-                RGPD). Los datos recogidos por el formulario de contacto
-                únicamente se transmiten por correo electrónico y no se
-                almacenan en dichos servicios.
+                RGPD). Los datos del formulario de contacto se almacenan en Supabase
+                y se consultan desde la bandeja de solicitudes de Moira Ordo.
               </p>
             </div>
             <p className="legal-text">
@@ -290,49 +290,28 @@ export default function AvisoLegalRoute() {
               <h2 className="legal-section-title">Política de cookies</h2>
             </div>
             <p className="legal-text">
-              Una cookie es un pequeño archivo de texto que un sitio web
-              almacena en el dispositivo del usuario. De conformidad con el
-              artículo 22.2 de la LSSI-CE, se informa sobre el uso de cookies
-              en este sitio:
-            </p>
-            <ul className="legal-list">
-              <li>
-                <span>
-                  <strong>Cookies técnicas:</strong> estrictamente necesarias
-                  para el correcto funcionamiento del sitio. No requieren
-                  consentimiento previo. No recopilan información personal y no
-                  se utilizan con fines de seguimiento.
-                </span>
-              </li>
-              <li>
-                <span>
-                  <strong>Cookies de terceros (Google Fonts):</strong> el sitio
-                  utiliza tipografías alojadas en Google Fonts (fonts.googleapis.com
-                  y fonts.gstatic.com), lo que puede conllevar la transmisión
-                  de la dirección IP del usuario a los servidores de Google.
-                  Consulta la política de privacidad de Google en{" "}
-                  <a
-                    href="https://policies.google.com/privacy"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    policies.google.com/privacy
-                  </a>
-                  .
-                </span>
-              </li>
-            </ul>
-            <p className="legal-text">
-              Este sitio web <strong>no utiliza cookies analíticas,
-              publicitarias ni de seguimiento</strong>. No existe un perfil de
-              comportamiento del usuario ni se comparten datos con redes
-              publicitarias.
+              La medición propia registra visitas, clics, lectura y tiempo visible sin cookies
+              ni identificadores persistentes. El servidor calcula un hash del visitante que
+              cambia cada día; no se guardan la IP ni el navegador completo. Las rutas se
+              normalizan y el origen se reduce a su dominio. Las campañas UTM se recogen en la primera visita.
             </p>
             <p className="legal-text">
-              El usuario puede configurar su navegador para bloquear o eliminar
-              cookies. Ten en cuenta que deshabilitar cookies técnicas puede
-              afectar al funcionamiento del sitio.
+              Esta medición tiene como finalidad mejorar el sitio y se realiza por interés legítimo
+              (artículo 6.1.f RGPD). Puedes oponerte en cualquier momento desactivando
+              «Medición sin cookies». Global Privacy Control también la desactiva.
+              Rechazar cookies de terceros mantiene tu elección de medición propia.
             </p>
+            <p className="legal-text">
+              Los eventos se conservan 35 días y los resúmenes diarios sin visitante se conservan
+              para comparar tendencias. La sal diaria se elimina a las 48 horas en el backend.
+            </p>
+            <p className="legal-text">
+              Las cookies de analítica de terceros y publicidad requieren consentimiento previo.
+              Actualmente no se cargan GA4 ni píxeles publicitarios. Las preferencias se guardan
+              en el almacenamiento local durante un año y se vuelven a solicitar si cambian las finalidades.
+              Las funciones necesarias del sitio permanecen activas.
+            </p>
+            <button type="button" className="cookie-preferences-link" onClick={openCookiePreferences}>Preferencias de cookies</button>
           </section>
 
           {/* 06 */}
@@ -363,11 +342,8 @@ export default function AvisoLegalRoute() {
               </li>
               <li>
                 <span>
-                  <strong>Supabase Inc.</strong> (gestión de contenidos del
-                  sitio) — Base de datos PostgreSQL utilizada exclusivamente
-                  para almacenar los contenidos editoriales del sitio (textos,
-                  proyectos, servicios). No almacena datos de usuarios del sitio
-                  web público. Más información en{" "}
+                  <strong>Supabase Inc.</strong> (contenidos, solicitudes y medición propia) — Base de datos PostgreSQL
+                  que almacena contenidos editoriales, datos del formulario y eventos de medición. Más información en{" "}
                   <a
                     href="https://supabase.com/privacy"
                     target="_blank"
@@ -399,7 +375,7 @@ export default function AvisoLegalRoute() {
                   — El mensaje enviado mediante el formulario de contacto se
                   transmite a través de un servidor de correo saliente (SMTP)
                   configurado por el titular. Los datos del formulario se usan
-                  exclusivamente para responder a la consulta y no se almacenan.
+                  exclusivamente para responder a la consulta y gestionar la solicitud en la bandeja.
                 </span>
               </li>
             </ul>

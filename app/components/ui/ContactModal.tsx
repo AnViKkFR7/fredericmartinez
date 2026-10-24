@@ -1,42 +1,46 @@
-import { useFetcher } from "@remix-run/react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import { useContactModal } from "~/context/ContactModalContext";
 import ButtonSlider from "~/components/ui/ButtonSlider";
-import { trackEvent } from "~/lib/analytics";
+import { submitLead } from "~/lib/leads";
 import "~/styles/ContactModal.css";
-
-interface ContactActionData {
-    ok: boolean;
-    error?: string;
-}
 
 export default function ContactModal() {
     const { isOpen, closeModal } = useContactModal();
-    const fetcher = useFetcher<ContactActionData>();
     const formRef = useRef<HTMLFormElement>(null);
 
-    const isSubmitting = fetcher.state !== "idle";
-    const hasData = fetcher.state === "idle" && fetcher.data != null;
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const submitting = useRef(false);
     const [hasError, setHasError] = useState(false);
     const [success, setSuccess] = useState(false);
 
-    useEffect(() => {
-        if (success) {
+    async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+        event.preventDefault();
+        if (submitting.current) return;
+        const data = new FormData(event.currentTarget);
+        if (!String(data.get("email") ?? "").trim() && !String(data.get("phone") ?? "").trim()) {
+            const emailInput = event.currentTarget.elements.namedItem("email") as HTMLInputElement;
+            emailInput.setCustomValidity("Indica un email o un teléfono para poder responderte.");
+            emailInput.reportValidity();
+            return;
+        }
+        submitting.current = true;
+        setIsSubmitting(true);
+        setHasError(false);
+        const result = await submitLead({
+            name: String(data.get("nombre") ?? ""),
+            email: String(data.get("email") ?? ""),
+            phone: String(data.get("phone") ?? ""),
+            message: String(data.get("mensaje") ?? ""),
+            company_website: String(data.get("company_website") ?? ""),
+            privacy: data.get("privacy") === "on",
+        });
+        submitting.current = false;
+        setIsSubmitting(false);
+        if (result.ok) {
             formRef.current?.reset();
-        }
-    }, [success]);
-
-    useEffect(() => {
-        if (hasData) {
-            if (fetcher.data?.ok) {
-                setSuccess(true);
-                trackEvent("form_submit");
-            } else {
-                setHasError(true);
-                trackEvent("form_error");
-            }
-        }
-    }, [hasData, fetcher.data]);
+            setSuccess(true);
+        } else setHasError(true);
+    }
 
     useEffect(() => {
         if (isOpen) {
@@ -81,7 +85,7 @@ export default function ContactModal() {
                 <h2 className="contact-modal-title">¿En qué puedo ayudarte?</h2>
 
                 {success ? (
-                    <div className="contact-feedback contact-feedback--success">
+                    <div className="contact-feedback contact-feedback--success" role="status">
                         <p className="contact-feedback-heading">¡Mensaje enviado!</p>
                         <p className="contact-feedback-body">
                             Pronto recibirás mi respuesta.
@@ -91,10 +95,14 @@ export default function ContactModal() {
                         </button>
                     </div>
                 ) : (
-                    <fetcher.Form
+                    <form
                         ref={formRef}
                         method="post"
-                        action="/contact"
+                        onSubmit={handleSubmit}
+                        onInput={() => {
+                            const emailInput = formRef.current?.elements.namedItem("email") as HTMLInputElement | null;
+                            emailInput?.setCustomValidity("");
+                        }}
                         className="contact-form"
                     >
                         <div className="contact-form-group">
@@ -104,7 +112,7 @@ export default function ContactModal() {
                                 name="nombre"
                                 type="text"
                                 required
-                                maxLength={100}
+                                maxLength={120}
                                 placeholder="Tu nombre"
                                 autoComplete="name"
                             />
@@ -116,11 +124,15 @@ export default function ContactModal() {
                                 id="cf-email"
                                 name="email"
                                 type="email"
-                                required
-                                maxLength={254}
+                                maxLength={160}
                                 placeholder="tu@email.com"
                                 autoComplete="email"
                             />
+                        </div>
+
+                        <div className="contact-form-group">
+                            <label htmlFor="cf-phone">Teléfono (opcional si indicas email)</label>
+                            <input id="cf-phone" name="phone" type="tel" maxLength={40} autoComplete="tel" placeholder="Tu teléfono" />
                         </div>
 
                         <div className="contact-form-group">
@@ -136,7 +148,7 @@ export default function ContactModal() {
                         </div>
 
                         {hasError && (
-                            <div className="contact-feedback contact-feedback--error">
+                            <div className="contact-feedback contact-feedback--error" role="alert">
                                 <p>
                                     Ha ocurrido un error. Por favor inténtalo de nuevo en unos
                                     minutos, o escríbeme directamente a{" "}
@@ -151,6 +163,12 @@ export default function ContactModal() {
                                 O si lo prefieres escríbeme a <a href="mailto:hola@fredericmartinez.com">hola@fredericmartinez.com</a>
                             </p>
                         </div>  
+                        <input type="text" name="company_website" tabIndex={-1} autoComplete="off" aria-hidden="true"
+                            style={{ position: "absolute", left: -9999, width: 1, height: 1 }} />
+                        <label className="contact-privacy-check">
+                            <input type="checkbox" name="privacy" required />
+                            <span>He leído y acepto la <a href="/aviso-legal#privacidad" target="_blank" rel="noopener noreferrer">política de privacidad</a>.</span>
+                        </label>
                         <div className="contact-form-submit">
                             <ButtonSlider
                                 type="submit"
@@ -161,13 +179,13 @@ export default function ContactModal() {
                         </div>
                         <div className="contact-form-note">
                             <p className="contact-form-note-privacy">
-                                Al enviar este formulario aceptas que tus datos sean tratados de
-                                acuerdo con nuestra{" "}<a href="/aviso-legal" target="_blank" rel="noopener noreferrer" className="contact-form-note-privacy-link">
+                                Tus datos se guardan en la bandeja de solicitudes para responderte.
+                                Consulta los detalles en la{" "}<a href="/aviso-legal" target="_blank" rel="noopener noreferrer" className="contact-form-note-privacy-link">
                                     política de privacidad
                                 </a>.
                             </p>
                         </div>
-                    </fetcher.Form>
+                    </form>
                 )}
             </div>
         </div>

@@ -1,89 +1,61 @@
 import type { ActionFunctionArgs } from "@remix-run/node";
-import { createClient } from "@supabase/supabase-js";
-import { COMPANY_ID } from "~/lib/company";
+import { integrationCompanyId, integrationDatabase, methodNotAllowed } from "~/lib/integrations.server";
+import {
+  businessDay, deviceFromUa, geoFromHeaders, isBot, isEventKeyAllowed,
+  isReservedEventKey, isSameOrigin, parseTrackPayload, visitorHash,
+} from "~/lib/trackCore";
 
-const ALLOWED_EVENT_TYPES = new Set(["page_view", "cta_click"]);
-
-const supabaseUrl = process.env.VITE_SUPABASE_URL ?? "";
-const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY ?? "";
-const isConfigured = Boolean(supabaseUrl && serviceRoleKey);
-
-const supabase = createClient(
-  supabaseUrl || "https://placeholder.supabase.co",
-  serviceRoleKey || "placeholder",
-);
-
-// Caché por invocación "caliente" de la función: evita consultar las
-// definiciones de eventos en cada clic.
-let definitionsCache: { keys: Set<string>; expiresAt: number } | null = null;
-
-async function activeEventKeys(): Promise<Set<string>> {
-  if (definitionsCache && definitionsCache.expiresAt > Date.now()) {
-    return definitionsCache.keys;
-  }
-  const { data } = await supabase
-    .from("analytics_event_definitions")
-    .select("key")
-    .eq("company_id", COMPANY_ID)
-    .eq("is_active", true);
-  const keys = new Set((data ?? []).map((d) => d.key as string));
-  definitionsCache = { keys, expiresAt: Date.now() + 5 * 60 * 1000 };
-  return keys;
-}
-
-interface TrackPayload {
-  event_type?: string;
-  event_key?: string;
-  path?: string;
-  session_id?: string;
-}
+const noContent = () => new Response(null, { status: 204 });
+let definitionsCache: { companyId: string; keys: Set<string>; expiresAt: number } | null = null;
+let saltCache: { day: string; salt: string } | null = null;
+export const loader = methodNotAllowed;
 
 export async function action({ request }: ActionFunctionArgs) {
-  if (!isConfigured) return new Response("Not configured", { status: 500 });
-
-  let body: TrackPayload;
+  if (request.method !== "POST") return methodNotAllowed();
+  const get = (header: string) => request.headers.get(header);
+  const ua = get("user-agent") ?? "";
+  if (get("sec-gpc") === "1" || isBot(ua) || !isSameOrigin(get)) return noContent();
+  if (!process.env.ANALYTICS_SALT) return noContent();
   try {
-    body = await request.json();
+    const db = integrationDatabase();
+    if (!db) return noContent();
+    const raw = await request.text();
+    if (raw.length > 4000) return noContent();
+    const payload = parseTrackPayload(JSON.parse(raw), { ownHost: new URL(request.url).host });
+    // Bind this endpoint to this company, even with a service-role key.
+    if (!payload || payload.company_id !== integrationCompanyId()) return noContent();
+    if (payload.event_type === "cta_click" && !isReservedEventKey(payload.event_key!)) {
+      if (definitionsCache?.companyId !== payload.company_id || definitionsCache.expiresAt <= Date.now()) {
+        const { data, error } = await db.from("analytics_event_definitions").select("key")
+          .eq("company_id", payload.company_id).eq("is_active", true);
+        if (error) return noContent();
+        definitionsCache = {
+          companyId: payload.company_id,
+          keys: new Set((data ?? []).map((row) => row.key as string)),
+          expiresAt: Date.now() + 300_000,
+        };
+      }
+      if (!isEventKeyAllowed(payload.event_key!, definitionsCache.keys)) return noContent();
+    }
+    const day = businessDay(new Date());
+    if (saltCache?.day !== day) {
+      const { data, error } = await db.rpc("analytics_salt", { p_day: day });
+      if (error || typeof data !== "string" || !data) return noContent();
+      saltCache = { day, salt: data };
+    }
+    const ip = get("x-real-ip") ?? get("x-forwarded-for")?.split(",")[0]?.trim() ?? "";
+    const visitor = await visitorHash(`${saltCache.salt}:${process.env.ANALYTICS_SALT}`, day, ip, ua);
+    const { error } = await db.from("analytics_events").insert({
+      company_id: payload.company_id, event_type: payload.event_type,
+      event_key: payload.event_key ?? null, value: payload.value ?? null,
+      path: payload.path ?? null, visitor, device: deviceFromUa(ua), ...geoFromHeaders(get),
+      lang: payload.lang ?? null, referrer: payload.referrer ?? null,
+      utm_source: payload.utm_source ?? null, utm_medium: payload.utm_medium ?? null,
+      utm_campaign: payload.utm_campaign ?? null,
+    });
+    if (error) console.error("[track] insert failed", error.code);
   } catch {
-    return new Response("Bad request", { status: 400 });
+    console.error("[track] measurement unavailable");
   }
-
-  const { event_type, event_key, path, session_id } = body;
-  if (!event_type || !ALLOWED_EVENT_TYPES.has(event_type) || !session_id) {
-    return new Response("Bad request", { status: 400 });
-  }
-
-  // Un clic cuya clave no esté dada de alta (o esté desactivada) en el panel de
-  // admin se descarta en silencio: nunca da error al visitante.
-  if (event_type === "cta_click") {
-    if (!event_key) return new Response("Bad request", { status: 400 });
-    const keys = await activeEventKeys();
-    if (!keys.has(event_key)) return new Response(null, { status: 204 });
-  }
-
-  // Geolocalización ya resuelta por la CDN de Vercel, sin servicios externos.
-  const country = request.headers.get("x-vercel-ip-country");
-  const region = request.headers.get("x-vercel-ip-country-region");
-  const city = request.headers.get("x-vercel-ip-city");
-
-  const ua = request.headers.get("user-agent") ?? "";
-  const device = /mobile/i.test(ua) ? "mobile" : /tablet|ipad/i.test(ua) ? "tablet" : "desktop";
-
-  const { error } = await supabase.from("analytics_events").insert({
-    company_id: COMPANY_ID,
-    event_type,
-    event_key: event_type === "cta_click" ? event_key : null,
-    path,
-    session_id,
-    device,
-    country,
-    region,
-    city,
-  });
-
-  if (error) {
-    console.error("[analytics] insert error:", error.message);
-    return new Response("Error", { status: 500 });
-  }
-  return new Response(null, { status: 204 });
+  return noContent();
 }
