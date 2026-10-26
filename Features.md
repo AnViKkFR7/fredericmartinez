@@ -39,3 +39,4 @@ con preferencias de privacidad reabribles. Configuración y validación: `docs/i
 - 2026-10-24 · [P1] Implementación de las dos integraciones, banner, política actualizada y pruebas.
 
 - 2026-10-26 · [P2] CRM actualizado, blog público, auditoría y pruebas de SSR de producción.
+- 2026-10-26 · [P3] Retirado el enlace del blog de la navegación de escritorio y móvil.
