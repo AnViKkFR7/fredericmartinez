@@ -8,7 +8,7 @@ const COMPANY = "40e02f2e-8863-4d3a-9bc8-352223d9aab0";
 function load(entry, prod = true) {
   const { outputFiles } = buildSync({
     entryPoints: [entry], bundle: true, write: false, format: "cjs", platform: "node",
-    packages: "external", alias: { "~": "./app" }, define: { "import.meta.env.PROD": String(prod), "import.meta.env.VITE_COMPANY_ID": JSON.stringify(COMPANY) },
+    packages: entry.endsWith("BlogBody.tsx") ? undefined : "external", external: ["react", "react/*"], alias: { "~": "./app" }, define: { "import.meta.env.PROD": String(prod), "import.meta.env.VITE_COMPANY_ID": JSON.stringify(COMPANY) },
   });
   const module = { exports: {} };
   new Function("require", "module", "exports", outputFiles[0].text)(require, module, module.exports);
@@ -133,7 +133,7 @@ test("scroll thresholds fire once per page; short pages are ignored", async () =
 });
 test("submitLead fires a conversion only for 201, never for honeypot/errors/network", async () => {
   const b = browser(); const leads = load("app/lib/leads.ts");
-  const input = { name: "Ana", email: "ana@example.com", privacy: true };
+  const input = { name: "Ana", email: "ana@example.com", consent_given: true, consent_text_version: "test-v1" };
   let submitted;
   globalThis.fetch = async (_url, init) => { submitted = JSON.parse(init.body); return new Response(null, { status: 201 }); };
   assert.equal((await leads.submitLead(input)).ok, true);
@@ -158,7 +158,11 @@ function server() {
     calls.push({ url: String(url), body: init?.body ? JSON.parse(init.body) : null });
     return String(url).includes("rpc/analytics_salt")
       ? new Response(JSON.stringify("daily-test-salt"), { headers: { "content-type": "application/json" } })
-      : new Response(null, { status: 201 });
+      : String(url).includes("/companies?")
+        ? new Response(JSON.stringify({ id: COMPANY }), { headers: { "content-type": "application/json" } })
+        : String(url).includes("/company_modules?")
+          ? new Response("null", { headers: { "content-type": "application/json" } })
+          : new Response(null, { status: 201 });
   };
   return calls;
 }
@@ -170,16 +174,16 @@ function request(body, headers = {}) {
 }
 test("lead endpoint stores only allowed columns and returns 201 after persistence", async () => {
   const calls = server(); const { action } = load("app/routes/api.lead.ts");
-  const response = await action({ request: request({ company_id: COMPANY, name: "Ana", phone: "123", privacy: true, status: "closed", source_path: "/servicios", source_campaign: "otoño" }) });
-  assert.equal(response.status, 201); assert.equal(calls.length, 1);
-  assert.match(calls[0].url, /\/rest\/v1\/lead$/);
-  assert.equal(calls[0].body.company_id, COMPANY); assert.equal(calls[0].body.status, undefined);
-  assert.equal(calls[0].body.source_campaign, "otoño");
+  const response = await action({ request: request({ company_id: COMPANY, name: "Ana", phone: "123", consent_given: true, consent_text_version: "test-v1", status: "closed", source_path: "/servicios", source_campaign: "otoño" }) });
+  assert.equal(response.status, 201); assert.equal(calls.length, 3);
+  assert.match(calls[2].url, /\/rest\/v1\/lead$/);
+  assert.equal(calls[2].body.company_id, COMPANY); assert.equal(calls[2].body.status, undefined);
+  assert.equal(calls[2].body.source_campaign, "otoño");
 });
-test("lead endpoint rejects invalid input, missing privacy, foreign company and cross-origin", async () => {
+test("lead endpoint rejects invalid input, foreign company and cross-origin", async () => {
   const calls = server(); const { action } = load("app/routes/api.lead.ts");
-  const base = { company_id: COMPANY, name: "Ana", email: "ana@example.com", privacy: true };
-  for (const patch of [{ company_id: "0aad4a59-d6ee-47c9-bb9e-da5e2bb3fb48" }, { privacy: false }, { email: "invalid" }, { name: "" }]) {
+  const base = { company_id: COMPANY, name: "Ana", email: "ana@example.com", consent_given: true, consent_text_version: "test-v1" };
+  for (const patch of [{ company_id: "0aad4a59-d6ee-47c9-bb9e-da5e2bb3fb48" }, { email: "invalid" }, { name: "" }]) {
     assert.equal((await action({ request: request({ ...base, ...patch }) })).status, 400);
   }
   assert.equal((await action({ request: request(base, { "sec-fetch-site": "cross-site" }) })).status, 403);
@@ -188,13 +192,16 @@ test("lead endpoint rejects invalid input, missing privacy, foreign company and 
 });
 test("honeypot pretends success without saving; missing config and database errors never pretend success", async () => {
   const calls = server(); const { action } = load("app/routes/api.lead.ts");
-  const base = { company_id: COMPANY, name: "Ana", email: "ana@example.com", privacy: true };
+  const base = { company_id: COMPANY, name: "Ana", email: "ana@example.com", consent_given: true, consent_text_version: "test-v1" };
   assert.equal((await action({ request: request({ ...base, company_website: "bot" }) })).status, 200);
   assert.equal(calls.length, 0);
   delete process.env.SUPABASE_SERVICE_ROLE_KEY;
   assert.equal((await action({ request: request(base) })).status, 503);
   process.env.SUPABASE_SERVICE_ROLE_KEY = "test-key";
-  globalThis.fetch = async () => new Response(JSON.stringify({ code: "TEST_ERROR" }), { status: 500 });
+  const dbFetch = globalThis.fetch;
+  globalThis.fetch = async (url, init) => String(url).endsWith("/lead")
+    ? new Response(JSON.stringify({ code: "TEST_ERROR" }), { status: 500 })
+    : dbFetch(url, init);
   assert.equal((await action({ request: request(base) })).status, 500);
 });
 test("tracking endpoint uses server-derived visitor and device, never trusts client identity", async () => {
@@ -225,4 +232,157 @@ test("endpoints reject GET and other methods", async () => {
     assert.equal(route.loader().status, 405);
     assert.equal((await route.action({ request: new Request("https://example.com", { method: "PUT" }) })).status, 405);
   }
+});
+
+test("lead records complete attribution and explicit versioned consent", async () => {
+  const calls = server(), { action } = load("app/routes/api.lead.ts");
+  await action({ request: request({ company_id: COMPANY, name: "Ana", phone: "123", source_item: "Diseño · diseno", source_campaign: "otoño", source_referrer: "https://example.org/", source_utm_source: "google", source_utm_medium: "cpc", source_utm_term: "diseño", source_utm_content: "banner", consent_given: true, consent_text_version: "test-v2", consent_at: "forged", contact_id: "forged" }) });
+  const lead = calls.find((call) => call.url.endsWith("/lead")).body;
+  assert.equal(lead.source_item, "Diseño · diseno");
+  assert.equal(lead.source_utm_content, "banner");
+  assert.equal(lead.source_utm_term, "diseño");
+  assert.equal(lead.source_referrer, "https://example.org/");
+  assert.equal(lead.consent_given, true);
+  assert.equal(lead.consent_source, "public_contact_form");
+  assert.equal(lead.consent_text_version, "test-v2");
+  assert.ok(Number.isFinite(new Date(lead.consent_at).getTime()));
+  assert.equal(lead.contact_id, undefined);
+});
+test("lead accepts unconsented enquiries and never invents consent without a text version", async () => {
+  for (const consent of [{ consent_given: false, consent_text_version: "test-v2" }, { consent_given: true }, {}]) {
+    const calls = server(), { action } = load("app/routes/api.lead.ts");
+    const response = await action({ request: request({ company_id: COMPANY, name: "Ana", email: "ana@example.com", ...consent }) });
+    assert.equal(response.status, 201);
+    const lead = calls.find((call) => call.url.endsWith("/lead")).body;
+    assert.equal(lead.consent_given, false); assert.equal(lead.consent_at, null);
+    assert.equal(lead.consent_text_version, null); assert.equal(lead.consent_source, null);
+  }
+});
+test("lead refuses disabled CRM and invalid or absent deployment company", async () => {
+  const calls = server(), { action } = load("app/routes/api.lead.ts");
+  const dbFetch = globalThis.fetch;
+  globalThis.fetch = (url, init) => String(url).includes("/company_modules?")
+    ? new Response(JSON.stringify({ is_enabled: false }), { headers: { "content-type": "application/json" } }) : dbFetch(url, init);
+  const input = { company_id: COMPANY, name: "Ana", phone: "123" };
+  assert.equal((await action({ request: request(input) })).status, 503);
+  assert.equal(calls.some((call) => call.url.endsWith("/lead")), false);
+  for (const value of ["", "invalid"]) {
+    process.env.VITE_COMPANY_ID = value;
+    assert.equal((await action({ request: request(input) })).status, 503);
+  }
+});
+test("legacy URL-encoded contact endpoint records only explicitly versioned consent", async () => {
+  const calls = server(), { action } = load("app/routes/contact.tsx");
+  const response = await action({ request: new Request("https://example.com/contact", {
+    method: "POST", headers: { "content-type": "application/x-www-form-urlencoded", "sec-fetch-site": "same-origin" },
+    body: new URLSearchParams({ nombre: "Ana", email: "ana@example.com", mensaje: "Consulta", consent_given: "on", consent_text_version: "test-v3" }),
+  }) });
+  assert.equal(response.status, 201);
+  const lead = calls.find((call) => call.url.endsWith("/lead")).body;
+  assert.equal(lead.consent_given, true); assert.equal(lead.consent_text_version, "test-v3");
+});
+test("lead client sends five UTM fields, referrer and item, including an unchecked consent box", async () => {
+  const b = browser(); b.win.location.search = "?utm_source=google&utm_medium=cpc&utm_campaign=otoño&utm_term=web&utm_content=banner";
+  let body;
+  globalThis.fetch = async (_url, init) => { body = JSON.parse(init.body); return new Response(null, { status: 201 }); };
+  const leads = load("app/lib/leads.ts");
+  assert.equal((await leads.submitLead({ name: "Ana", phone: "123", source_item: "Ficha", consent_given: false })).ok, true);
+  assert.equal(body.source_campaign, "otoño"); assert.equal(body.source_utm_term, "web");
+  assert.equal(body.source_utm_content, "banner"); assert.equal(body.source_utm_medium, "cpc");
+  assert.equal(body.source_utm_source, "google"); assert.equal(body.source_item, "Ficha");
+  assert.equal(body.source_referrer, b.doc.referrer); assert.equal(body.consent_given, false);
+});
+
+function blogDatabase({ posts, media = [], failTable } = {}) {
+  process.env.VITE_SUPABASE_URL = "https://public.example.com";
+  process.env.VITE_SUPABASE_ANON_KEY = "public-anon-test-key";
+  process.env.PUBLIC_SITE_URL = "https://frederic.example.com";
+  const calls = [];
+  globalThis.fetch = async (input, init) => {
+    const url = new URL(input); calls.push({ url, headers: init?.headers });
+    const table = url.pathname.split("/").pop();
+    if (table === failTable) return new Response(JSON.stringify({ code: "TEST_ERROR" }), { status: 400 });
+    let rows = [...(table === "blog_posts" ? posts ?? [] : media)];
+    for (const field of ["company_id", "status", "file_type"]) {
+      const filter = url.searchParams.get(field);
+      if (filter?.startsWith("eq.")) rows = rows.filter((row) => row[field] === filter.slice(3));
+    }
+    const ids = url.searchParams.get("post_id");
+    if (ids) rows = rows.filter((row) => ids.includes(row.post_id));
+    const slug = url.searchParams.get("slug");
+    if (slug?.startsWith("ilike.")) rows = rows.filter((row) => row.slug?.toLowerCase() === slug.slice(6).toLowerCase());
+    else if (slug === "not.is.null") rows = rows.filter((row) => row.slug !== null);
+    const offset = Number(url.searchParams.get("offset") ?? 0), limit = Number(url.searchParams.get("limit") ?? rows.length);
+    rows = rows.slice(offset, offset + limit);
+    const single = String(new Headers(init?.headers).get("accept")).includes("object+json");
+    return new Response(JSON.stringify(single ? rows[0] ?? null : rows), { headers: { "content-type": "application/json" } });
+  };
+  return calls;
+}
+const postFixture = (overrides = {}) => ({
+  id: "post-1", company_id: COMPANY, status: "published", slug: "mi-articulo", title: "Mi artículo",
+  heading: "Una mirada", intro: "Introducción", body: "## Contenido\n\nTexto público.",
+  seo_title: null, seo_description: null, seo_og_image_url: null,
+  published_at: "2026-10-25T10:00:00Z", updated_at: "2026-10-26T10:00:00Z", created_at: "2026-10-24T10:00:00Z",
+  ...overrides,
+});
+test("blog audit identifies old missing slugs, invalid slugs and case-insensitive duplicates", () => {
+  const blog = load("app/lib/blog.ts");
+  assert.deepEqual(blog.auditBlogSlugs([{ id: "1", slug: null }, { id: "2", slug: "ruta invalida" }, { id: "3", slug: "hola" }, { id: "4", slug: "HOLA" }]).map((issue) => issue.issue), ["invalid_slug", "invalid_slug", "duplicate_slug"]);
+});
+test("blog lists only this company's published posts, and only their ordered images", async () => {
+  const calls = blogDatabase({ posts: [postFixture(), postFixture({ id: "draft", status: "draft" }), postFixture({ id: "other", company_id: "another" })], media: [{ id: "cover", post_id: "post-1", file_type: "image", url_externa: "https://images.example.com/cover.jpg", alt_text: "Una imagen", is_cover_image: true }, { id: "private", post_id: "draft", file_type: "image" }, { id: "video", post_id: "post-1", file_type: "video" }] });
+  const blog = load("app/lib/blog.server.ts"), result = await blog.getBlogPage(1);
+  assert.equal(result.posts.length, 1); assert.equal(result.posts[0].media.length, 1);
+  assert.equal(result.posts[0].cover.alt_text, "Una imagen");
+  for (const call of calls.filter((call) => call.url.pathname.endsWith("blog_posts"))) {
+    assert.equal(call.url.searchParams.get("company_id"), `eq.${COMPANY}`);
+    assert.equal(call.url.searchParams.get("status"), "eq.published");
+  }
+  const media = calls.find((call) => call.url.pathname.endsWith("blog_media")).url;
+  assert.equal(media.searchParams.get("post_id"), "in.(post-1)");
+  assert.equal(media.searchParams.get("order"), "sort_order.asc,id.asc");
+});
+test("blog returns 404 for missing, draft, archived and other-company posts", async () => {
+  blogDatabase({ posts: [postFixture({ status: "draft" }), postFixture({ id: "archive", slug: "archive", status: "archived" }), postFixture({ id: "other", slug: "otro", company_id: "another" })] });
+  const blog = load("app/lib/blog.server.ts");
+  for (const slug of ["mi-articulo", "archive", "otro", "no-existe", "bad_slug"]) {
+    await assert.rejects(blog.getBlogPost(slug), (error) => error.status === 404);
+  }
+});
+test("blog pagination has a real empty state and rejects out-of-range pages", async () => {
+  blogDatabase({ posts: [] });
+  const blog = load("app/lib/blog.server.ts");
+  assert.deepEqual((await blog.getBlogPage(1)).posts, []);
+  await assert.rejects(blog.getBlogPage(2), (error) => error.status === 404);
+  blogDatabase({ posts: Array.from({ length: 13 }, (_, i) => postFixture({ id: `p${i}`, slug: `articulo-${i}` })) });
+  const page = await blog.getBlogPage(2);
+  assert.equal(page.pageCount, 2); assert.equal(page.posts.length, 1);
+});
+test("blog errors and preflight failures never masquerade as empty content", async () => {
+  const blog = load("app/lib/blog.server.ts");
+  for (const options of [{ failTable: "blog_posts" }, { posts: [postFixture({ slug: null })] }, { posts: [postFixture()], failTable: "blog_media" }]) {
+    blogDatabase(options);
+    await assert.rejects(blog.getBlogPage(1), (error) => error.status === 503);
+  }
+});
+test("blog SEO uses configured canonical domain, fallbacks and HTTPS image only; sitemap excludes non-public content", async () => {
+  blogDatabase({ posts: [postFixture(), postFixture({ id: "draft", status: "draft", slug: "borrador" })] });
+  const blog = load("app/lib/blog.ts"), server = load("app/lib/blog.server.ts");
+  const post = { ...postFixture(), media: [], cover: { url_externa: "https://images.example.com/cover.jpg" } };
+  const meta = blog.blogMeta(post, "https://canonical.example.com");
+  assert.equal(meta.find((m) => m.rel === "canonical").href, "https://canonical.example.com/blog/mi-articulo");
+  assert.equal(meta.find((m) => m.property === "og:image").content, post.cover.url_externa);
+  assert.equal(blog.blogMeta({ ...post, cover: null, seo_og_image_url: "http://unsafe/image" }, "https://canonical.example.com").some((m) => m.property === "og:image"), false);
+  const sitemap = blog.blogSitemap(server.publicSiteUrl(), await server.publishedBlogIndex());
+  assert.ok(sitemap.includes("https://frederic.example.com/blog/mi-articulo"));
+  assert.ok(!sitemap.includes("borrador"));
+});
+test("Markdown drops embedded HTML and unsafe links while keeping readable content", () => {
+  const { renderToStaticMarkup } = require("react-dom/server");
+  const { createElement } = require("react");
+  const { default: BlogBody } = load("app/components/ui/BlogBody.tsx");
+  const html = renderToStaticMarkup(createElement(BlogBody, { body: '# Título\n\n<script>alert(1)</script>\n\n[Malicioso](javascript:alert(1))\n\n**Texto**' }));
+  assert.ok(!html.includes("<script")); assert.ok(!html.includes("javascript:"));
+  assert.ok(!html.includes("<h1")); assert.ok(html.includes("<strong>Texto</strong>"));
 });

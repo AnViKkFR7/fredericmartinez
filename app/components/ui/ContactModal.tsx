@@ -1,3 +1,5 @@
+import { useMatches } from "@remix-run/react";
+import { LEAD_PRIVACY_TEXT_VERSION } from "~/lib/leadCore";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { useContactModal } from "~/context/ContactModalContext";
 import ButtonSlider from "~/components/ui/ButtonSlider";
@@ -6,6 +8,9 @@ import "~/styles/ContactModal.css";
 
 export default function ContactModal() {
     const { isOpen, closeModal } = useContactModal();
+    const matches = useMatches();
+    const detail = matches.map((match) => match.data as { project?: { title: string }; service?: { title: string }; post?: { title: string } } | undefined)
+        .map((data) => data?.project ?? data?.service ?? data?.post).find(Boolean);
     const formRef = useRef<HTMLFormElement>(null);
 
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -32,7 +37,9 @@ export default function ContactModal() {
             phone: String(data.get("phone") ?? ""),
             message: String(data.get("mensaje") ?? ""),
             company_website: String(data.get("company_website") ?? ""),
-            privacy: data.get("privacy") === "on",
+            source_item: detail ? `${detail.title} · ${window.location.pathname.split("/").pop()}` : undefined,
+            consent_given: data.get("privacy") === "on",
+            consent_text_version: LEAD_PRIVACY_TEXT_VERSION,
         });
         submitting.current = false;
         setIsSubmitting(false);
@@ -166,8 +173,8 @@ export default function ContactModal() {
                         <input type="text" name="company_website" tabIndex={-1} autoComplete="off" aria-hidden="true"
                             style={{ position: "absolute", left: -9999, width: 1, height: 1 }} />
                         <label className="contact-privacy-check">
-                            <input type="checkbox" name="privacy" required />
-                            <span>He leído y acepto la <a href="/aviso-legal#privacidad" target="_blank" rel="noopener noreferrer">política de privacidad</a>.</span>
+                            <input type="checkbox" name="privacy" />
+                            <span>He leído la <a href="/aviso-legal#privacidad" target="_blank" rel="noopener noreferrer">información de privacidad</a> y acepto el tratamiento explicado allí (opcional).</span>
                         </label>
                         <div className="contact-form-submit">
                             <ButtonSlider

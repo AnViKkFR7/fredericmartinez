@@ -38,6 +38,7 @@ export default function Header() {
               <li><NavLink to="/sobre-mi">SOBRE MÍ</NavLink></li>
               <li><NavLink to="/proyectos">PROYECTOS</NavLink></li>
               <li><NavLink to="/servicios">SERVICIOS</NavLink></li>
+              <li><NavLink to="/blog">BLOG</NavLink></li>
             </ul>
           </nav>
 
@@ -76,6 +77,10 @@ export default function Header() {
             <rect x="14" y="14" width="7" height="7" rx="1" />
           </svg>
           <span>SERVICIOS</span>
+        </NavLink>
+        <NavLink to="/blog" className="mobile-nav__item">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true"><path d="M4 3h16v18H4zM8 7h8M8 11h8M8 15h5" /></svg>
+          <span>BLOG</span>
         </NavLink>
       </nav>
     </>

@@ -43,13 +43,14 @@ export async function loader() {
 
 export default function App() {
   const { globalSection } = useLoaderData<typeof loader>();
+  const { pathname } = useLocation();
 
   return (
     <html lang="es">
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width,initial-scale=1" />
-        <title>Frederic Martínez</title>
+        {!/^\/blog(?:\/|$)/.test(pathname) && <title>Frederic Martínez</title>}
         <Meta />
         <Links />
       </head>
@@ -81,6 +82,7 @@ function isStaleBuildError(error: unknown): boolean {
 
 export function ErrorBoundary() {
   const error = useRouteError();
+  const { pathname } = useLocation();
   const isStaleBuild = isStaleBuildError(error);
   const isNotFound = isRouteErrorResponse(error) && error.status === 404;
 
@@ -97,7 +99,7 @@ export function ErrorBoundary() {
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width,initial-scale=1" />
-        <title>Frederic Martínez</title>
+        {!/^\/blog(?:\/|$)/.test(pathname) && <title>Frederic Martínez</title>}
         <Meta />
         <Links />
       </head>

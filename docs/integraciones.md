@@ -13,7 +13,7 @@ Configurar en el servidor local y en el hosting, sin publicar secretos:
 | `SUPABASE_URL` | Instancia de Supabase del panel. Si está vacía se utiliza `VITE_SUPABASE_URL`, por compatibilidad con la configuración existente. |
 | `SUPABASE_SERVICE_ROLE_KEY` | Clave privada del servidor de esa instancia. Nunca usar un prefijo `VITE_`. |
 | `ANALYTICS_SALT` | Secreto aleatorio exclusivo de este entorno. Necesario para medir. |
-| `VITE_COMPANY_ID` | UUID público de la empresa. Sin valor se conserva `40e02f2e-8863-4d3a-9bc8-352223d9aab0`. Debe coincidir en build y servidor. |
+| `VITE_COMPANY_ID` | UUID público de la empresa. Obligatorio y válido en servidor para aceptar solicitudes. El ID de Frederic es `40e02f2e-8863-4d3a-9bc8-352223d9aab0`; debe coincidir en build y servidor. |
 | `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASS` | Aviso por email opcional, conservado del formulario anterior. |
 
 Para generar una sal: `node -e "console.log(require('node:crypto').randomBytes(32).toString('hex'))"`.
@@ -30,15 +30,15 @@ consume esos contratos y no modifica el panel ni su base de datos.
 
 - El modal usa `submitLead` → `POST /api/lead` → tabla `lead`.
 - Nombre y email o teléfono, validación del servidor, límites del snippet,
-  aceptación de privacidad obligatoria y honeypot fuera de pantalla.
-- Se añaden la ruta actual y `utm_campaign` de la URL al enviar. Sin almacenamiento persistente de atribución.
+  casilla de consentimiento opcional con versión del texto y honeypot fuera de pantalla.
+- Se añaden ruta, referrer y los cinco UTM de la URL al enviar. En fichas se añade el título y segmento público de la ruta como `source_item`. Sin almacenamiento persistente de atribución.
 - Se fija la empresa del lado servidor; una petición no puede elegir otra bandeja.
 - Solo un `201` dispara `moira:lead-sent`, que produce `form_submit`. El honeypot
   devuelve `200` sin guardar ni contar una conversión. Un error de BD nunca muestra éxito.
 - El aviso SMTP se intenta después del guardado. Si falla, la solicitud sigue guardada;
   no hay cola de reintento de correo en esta web.
 - `/contact` permanece como alias para clientes anteriores. Los formularios URL-encoded
-  pueden usar `nombre` y `mensaje`, pero ahora deben enviar también `privacy=on`.
+  pueden usar `nombre` y `mensaje`, y pueden enviar `consent_given` y `consent_text_version`; la ausencia de consentimiento no bloquea la solicitud.
 
 ## Medición y privacidad
 
@@ -75,3 +75,47 @@ Para comprobar la conexión real tras configurar el hosting:
 
 El guardado real en el panel queda pendiente de verificar con su configuración; las pruebas
 automatizadas no confirman que las migraciones estén aplicadas en la instancia remota.
+
+
+## Actualización 2026-10-26: CRM
+
+El servidor consulta la empresa configurada y `company_modules` antes de insertar.
+Un módulo `crm` desactivado o un fallo al comprobarlo devuelve `503`.
+Un `VITE_COMPANY_ID` ausente o inválido también devuelve `503`, sin fallback.
+
+Se escriben `source_item`, `source_referrer`, `source_campaign` (UTM campaign),
+`source_utm_source`, `source_utm_medium`, `source_utm_term` y `source_utm_content`.
+Nunca se acepta `contact_id`: el backend crea/enlaza el contacto mediante sus triggers.
+Los textos de atribución son declarados por el navegador, no datos verificados.
+
+`consent_given` solo es verdadero con casilla marcada y versión no vacía.
+La fecha y `consent_source=public_contact_form` se fijan en el servidor; sin aceptación,
+fecha, origen y versión quedan a null. La versión actual del texto está en `leadCore.ts`.
+
+Requisitos remotos: `CRM_CONTACTS_PIPELINE.sql` y `CRM_LEAD_ITEM_ATTRIBUTION.sql`.
+Se ha comprobado la existencia de las columnas necesarias mediante consultas sin filas;
+no se han aplicado migraciones ni insertado solicitudes reales.
+
+## Blog
+
+- `VITE_SUPABASE_URL` y `VITE_SUPABASE_ANON_KEY`: lectura pública con RLS. Nunca usar la
+  clave de servicio para consultar el blog. `PUBLIC_SITE_URL` fija el dominio canónico;
+  por defecto es `https://fredericmartinez.com`.
+- `/blog` lista 12 entradas por página (`?page=2`); `/blog/:slug` entrega el artículo
+  desde Remix con título SEO, descripción, canonical y Open Graph en el HTML inicial.
+- Solo se leen posts publicados de esta empresa. Las imágenes se consultan únicamente
+  para esos IDs, se filtran por tipo y se ordenan por `sort_order`. Se respeta el alt.
+- Markdown con HTML desactivado y transformación segura de URLs de `react-markdown`.
+  No se usa `dangerouslySetInnerHTML`. Se conservan fecha de publicación y slugs del panel;
+  las variantes de mayúsculas redirigen permanentemente al slug almacenado.
+- `/sitemap.xml` incluye páginas principales y todos los artículos publicados válidos.
+  No incluye borradores, archivados ni entradas de otras empresas.
+- Antes de publicar: aplicar `CONTENT_SEO_FIELDS.sql` y ejecutar el SQL completo
+  `CONTENT_SEO_FIELDS_AUDIT.sql` en el panel, como indica la guía. `npm run audit:blog`
+  permite comprobar además los slugs publicados de esta empresa con la clave pública.
+  Las propias rutas bloquean la carga ante slugs inválidos o duplicados.
+- Comprobación remota del 26/10/2026: columnas de blog disponibles, 0 posts publicados
+  para esta empresa y 0 incidencias de slugs. La interfaz muestra el estado vacío real.
+- Pruebas: `npm test`, `npm run typecheck`, `npm run build` y después `npm run test:ssr`.
+  La última ejecuta el renderer de producción con un backend simulado: comprueba el HTML
+  sin ejecutar JavaScript, un único título, canonical, OG, Markdown, 404 y sitemap.

@@ -33,7 +33,7 @@ export default function AvisoLegalRoute() {
             Aviso Legal y Política de Privacidad
           </h1>
           <p className="legal-hero-meta">
-            Última actualización: octubre de 2026 &nbsp;·&nbsp;{" "}
+            Última actualización: 26 de octubre de 2026 &nbsp;·&nbsp;{" "}
             fredericmartinez.com
           </p>
         </div>
@@ -156,7 +156,7 @@ export default function AvisoLegalRoute() {
               <li>
                 <span>
                   <strong>Datos tratados:</strong> nombre, dirección de correo
-                  electrónico, teléfono si se facilita, mensaje y página y campaña de origen, recogidos a través del formulario de
+                  electrónico, teléfono si se facilita, mensaje y ficha consultada, ruta, referencia de origen y parámetros de campaña, recogidos a través del formulario de
                   contacto.
                 </span>
               </li>
@@ -169,8 +169,8 @@ export default function AvisoLegalRoute() {
               <li>
                 <span>
                   <strong>Base jurídica:</strong> consentimiento del interesado
-                  (art. 6.1.a RGPD), otorgado al enviar el formulario de
-                  contacto.
+                  (art. 6.1.a RGPD), cuando se marca la casilla correspondiente. La solicitud de respuesta
+                  puede enviarse sin marcar esa casilla; en ese caso no se registra consentimiento.
                 </span>
               </li>
               <li>

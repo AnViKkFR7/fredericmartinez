@@ -10,7 +10,9 @@ const ENDPOINT = '/api/lead'
 import { COMPANY_ID } from './company'
 
 export interface LeadInput {
-  privacy: boolean
+  source_item?: string
+  consent_given?: boolean
+  consent_text_version?: string
   name: string
   email?: string
   phone?: string
@@ -32,11 +34,12 @@ export async function submitLead(input: LeadInput): Promise<LeadResult> {
     console.warn('[leads] VITE_COMPANY_ID no está configurado — solicitud descartada')
     return { ok: false, reason: 'invalid' }
   }
-  if (!input.privacy || !input.name?.trim() || (!input.email?.trim() && !input.phone?.trim())) {
+  if (!input.name?.trim() || (!input.email?.trim() && !input.phone?.trim())) {
     return { ok: false, reason: 'invalid' }
   }
 
   try {
+    const params = new URLSearchParams(window.location.search)
     const response = await fetch(ENDPOINT, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -45,7 +48,12 @@ export async function submitLead(input: LeadInput): Promise<LeadResult> {
         company_id: COMPANY_ID,
         ...input,
         source_path: window.location.pathname,
-        source_campaign: new URLSearchParams(window.location.search).get('utm_campaign') ?? undefined,
+        source_campaign: params.get('utm_campaign') ?? undefined,
+        source_referrer: document.referrer || undefined,
+        source_utm_source: params.get('utm_source') ?? undefined,
+        source_utm_medium: params.get('utm_medium') ?? undefined,
+        source_utm_term: params.get('utm_term') ?? undefined,
+        source_utm_content: params.get('utm_content') ?? undefined,
       }),
     })
     if (response.status === 201) {
